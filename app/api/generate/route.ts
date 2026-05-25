@@ -17,9 +17,21 @@ import { checkAndConsume } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+interface CustomFormatPayload {
+  /** ID — used as the result key so client can match it back. */
+  id: string;
+  /** Display label, echoed back in result. */
+  label: string;
+  /** Full system-prompt body that replaces the built-in for this run. */
+  systemPrompt: string;
+}
+
 interface GenerateBody {
   source: string;
-  formats: FormatId[];
+  /** Format IDs — can be built-in FormatId values OR custom format ids. */
+  formats: string[];
+  /** Definitions for any custom IDs that appear in `formats`. */
+  customFormats?: CustomFormatPayload[];
   extraInstructions?: string;
   voiceProfile?: VoiceProfileForPrompt;
   /** Bring-Your-Own-Key. When server has no key, this is REQUIRED. */
@@ -48,8 +60,22 @@ export async function POST(req: NextRequest) {
   }
 
   const source = (body.source ?? "").trim();
+  const customFormatMap = new Map<string, CustomFormatPayload>();
+  for (const cf of body.customFormats ?? []) {
+    if (
+      cf &&
+      typeof cf.id === "string" &&
+      typeof cf.label === "string" &&
+      typeof cf.systemPrompt === "string" &&
+      cf.systemPrompt.trim().length > 0
+    ) {
+      customFormatMap.set(cf.id, cf);
+    }
+  }
   const formats = (body.formats ?? []).filter(
-    (f): f is FormatId => typeof f === "string" && f in FORMAT_MAP
+    (f): f is string =>
+      typeof f === "string" &&
+      (f in FORMAT_MAP || customFormatMap.has(f))
   );
   const extra = body.extraInstructions?.trim();
   const voiceProfile = body.voiceProfile;
@@ -151,11 +177,16 @@ export async function POST(req: NextRequest) {
   // Run all formats in parallel
   const results = await Promise.all(
     formats.map(async (formatId) => {
+      const custom = customFormatMap.get(formatId);
       try {
         const message = await client.messages.create({
           model: DEFAULT_MODEL,
           max_tokens: MAX_OUTPUT_TOKENS,
-          system: buildSystemPrompt(formatId, voiceProfile),
+          system: buildSystemPrompt(
+            formatId,
+            voiceProfile,
+            custom?.systemPrompt
+          ),
           messages: [
             { role: "user", content: buildUserPrompt(source, extra) },
           ],

@@ -10,6 +10,16 @@ import {
   Video,
   Layers,
   Flame,
+  BookOpen,
+  FileText,
+  MessageSquare,
+  Globe,
+  Lightbulb,
+  Code,
+  Music,
+  Mic,
+  Newspaper,
+  Megaphone,
   Sparkles,
   Loader2,
   Copy,
@@ -23,10 +33,10 @@ import {
   X,
   KeyRound,
   Trash2,
-  FileText,
+  Plus,
   type LucideIcon,
 } from "lucide-react";
-import { FORMATS, type FormatId, FORMAT_MAP } from "@/lib/formats";
+import { FORMATS, FORMAT_MAP } from "@/lib/formats";
 import { cn } from "@/lib/utils";
 import {
   loadVoiceProfile,
@@ -37,12 +47,17 @@ import {
   loadByokKey,
   saveByokKey,
   clearByokKey,
+  loadCustomFormats,
+  loadProfiles,
   newId,
   type HistoryEntry,
   type VoiceProfile,
+  type CustomFormat,
 } from "@/lib/storage";
 import { estimateCostUsd, formatUsd } from "@/lib/pricing";
+import { setProUnlocked } from "@/lib/pro";
 import { OnboardingModal } from "@/components/onboarding-modal";
+import { ExportResults } from "@/components/export-results";
 
 const ICONS: Record<string, LucideIcon> = {
   Hash,
@@ -52,10 +67,21 @@ const ICONS: Record<string, LucideIcon> = {
   Video,
   Layers,
   Flame,
+  BookOpen,
+  FileText,
+  MessageSquare,
+  Globe,
+  Lightbulb,
+  Code,
+  Music,
+  Mic,
+  Newspaper,
+  Megaphone,
+  Sparkles,
 };
 
 interface GenResult {
-  formatId: FormatId;
+  formatId: string;
   ok: boolean;
   text?: string;
   error?: string;
@@ -90,7 +116,7 @@ The lesson I should have learned five years sooner: in a market where everyone c
 export function Workspace() {
   // ─── input state
   const [source, setSource] = useState("");
-  const [selected, setSelected] = useState<Set<FormatId>>(
+  const [selected, setSelected] = useState<Set<string>>(
     new Set(["twitter_thread", "linkedin_post"])
   );
   const [extra, setExtra] = useState("");
@@ -104,14 +130,16 @@ export function Workspace() {
   // ─── generation state
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<GenResult[] | null>(null);
-  const [activeTab, setActiveTab] = useState<FormatId | null>(null);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [upgrade, setUpgrade] = useState(false);
   const [rateLimit, setRateLimit] = useState<RateLimit | null>(null);
 
   // ─── client-only persisted state
   const [voiceProfile, setVoiceProfile] = useState<VoiceProfile | null>(null);
+  const [voiceProfileCount, setVoiceProfileCount] = useState(0);
   const [useVoiceProfile, setUseVoiceProfile] = useState(true);
+  const [customFormats, setCustomFormats] = useState<CustomFormat[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -124,10 +152,27 @@ export function Workspace() {
 
   useEffect(() => {
     setVoiceProfile(loadVoiceProfile());
+    setVoiceProfileCount(loadProfiles().length);
+    setCustomFormats(loadCustomFormats());
     setHistory(loadHistory());
     const storedKey = loadByokKey() ?? "";
     setByokKey(storedKey);
     setHydrated(true);
+
+    // Handle Stripe success_url callback: ?upgraded=1
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("upgraded") === "1") {
+        setProUnlocked(true);
+        params.delete("upgraded");
+        params.delete("session_id");
+        const url = new URL(window.location.href);
+        url.search = params.toString();
+        window.history.replaceState({}, "", url.toString());
+      }
+    } catch {
+      /* ignore */
+    }
 
     // Probe server for its capability set
     fetch("/api/status")
@@ -150,7 +195,7 @@ export function Workspace() {
   const canGenerate =
     !loading && charsOk && selected.size > 0 && !needsByok;
 
-  function toggle(id: FormatId) {
+  function toggle(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -191,12 +236,22 @@ export function Workspace() {
     setUpgrade(false);
     setResults(null);
     try {
+      // Only send custom format definitions that are actually selected
+      const selectedCustom = customFormats.filter((f) => selected.has(f.id));
+      const customFormatsPayload = selectedCustom.map((f) => ({
+        id: f.id,
+        label: f.label,
+        systemPrompt: f.systemPrompt,
+      }));
+
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           source,
           formats: Array.from(selected),
+          customFormats:
+            customFormatsPayload.length > 0 ? customFormatsPayload : undefined,
           extraInstructions: extra || undefined,
           voiceProfile:
             useVoiceProfile && voiceProfile
@@ -227,6 +282,7 @@ export function Workspace() {
           formats: Array.from(selected),
           results: data.results,
           voiceProfileUsed: useVoiceProfile && Boolean(voiceProfile),
+          voiceProfileName: voiceProfile?.name,
         };
         setHistory(appendHistory(entry));
       }
@@ -266,6 +322,17 @@ export function Workspace() {
     () => results?.find((r) => r.formatId === activeTab) ?? null,
     [results, activeTab]
   );
+
+  // Resolve a format ID (built-in OR custom) to display data.
+  const resolveFormat = useMemo(() => {
+    return (id: string): { label: string; isCustom: boolean } => {
+      const built = (FORMAT_MAP as Record<string, { label: string }>)[id];
+      if (built) return { label: built.label, isCustom: false };
+      const c = customFormats.find((f) => f.id === id);
+      if (c) return { label: c.label, isCustom: true };
+      return { label: id, isCustom: false };
+    };
+  }, [customFormats]);
 
   if (!hydrated) {
     return (
@@ -312,7 +379,9 @@ export function Workspace() {
             )}
           >
             <Wand2 className="h-3.5 w-3.5" />
-            {voiceProfile ? "Voice profile: ON" : "Train voice profile"}
+            {voiceProfile
+              ? `Voice: ${voiceProfile.name}${voiceProfileCount > 1 ? ` · ${voiceProfileCount}` : ""}`
+              : "Train voice profile"}
           </Link>
 
           {voiceProfile && (
@@ -447,7 +516,16 @@ export function Workspace() {
             )}
           </div>
 
-          <h2 className="mt-8 text-lg font-semibold">2. Output formats</h2>
+          <div className="mt-8 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">2. Output formats</h2>
+            <Link
+              href="/formats"
+              className="inline-flex items-center gap-1 text-xs text-neutral-400 hover:text-white transition"
+            >
+              <Plus className="h-3 w-3" />
+              Custom format
+            </Link>
+          </div>
           <p className="mt-1 text-sm text-neutral-400">
             Pick one or many. Each runs in parallel.
           </p>
@@ -490,6 +568,44 @@ export function Workspace() {
                       isOn ? "bg-fuchsia-400" : "bg-transparent"
                     )}
                   />
+                </button>
+              );
+            })}
+
+            {customFormats.map((f) => {
+              const Icon = ICONS[f.icon] ?? Sparkles;
+              const isOn = selected.has(f.id);
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => toggle(f.id)}
+                  className={cn(
+                    "lift group relative overflow-hidden rounded-xl border p-3 text-left transition",
+                    isOn
+                      ? "border-fuchsia-400/40 bg-fuchsia-500/[0.08]"
+                      : "border-white/10 bg-white/[0.02] hover:bg-white/[0.05]"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        "inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br text-white",
+                        f.color
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="text-sm font-medium text-neutral-100">
+                      {f.label}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-neutral-400">
+                    {f.description || "Custom format"}
+                  </p>
+                  <span className="absolute right-2 top-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-1.5 text-[9px] uppercase tracking-wide text-amber-200">
+                    custom
+                  </span>
                 </button>
               );
             })}
@@ -552,9 +668,18 @@ export function Workspace() {
 
         {/* RESULTS */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-semibold">3. Your results</h2>
-            {results && <CostSummary results={results} />}
+            <div className="flex items-center gap-3">
+              {results && <CostSummary results={results} />}
+              {results && (
+                <ExportResults
+                  results={results}
+                  source={source}
+                  labelFor={(id) => resolveFormat(id).label}
+                />
+              )}
+            </div>
           </div>
 
           {!loading && !results && !error && <EmptyState />}
@@ -583,7 +708,7 @@ export function Workspace() {
             <div className="mt-5">
               <div className="flex flex-wrap gap-2">
                 {results.map((r) => {
-                  const f = FORMAT_MAP[r.formatId];
+                  const f = resolveFormat(r.formatId);
                   const isActive = r.formatId === activeTab;
                   return (
                     <button
@@ -604,6 +729,11 @@ export function Workspace() {
                         )}
                       />
                       {f.label}
+                      {f.isCustom && (
+                        <span className="ml-0.5 rounded-full bg-amber-500/20 px-1 text-[9px] text-amber-200">
+                          custom
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -612,7 +742,7 @@ export function Workspace() {
               {activeResult && (
                 <ResultBlock
                   result={activeResult}
-                  title={FORMAT_MAP[activeResult.formatId].label}
+                  title={resolveFormat(activeResult.formatId).label}
                 />
               )}
             </div>
@@ -857,7 +987,12 @@ function HistoryDrawer({
                       </p>
                       <p className="mt-1.5 text-[11px] text-neutral-500">
                         {e.formats
-                          .map((f) => FORMAT_MAP[f]?.label)
+                          .map(
+                            (f) =>
+                              (FORMAT_MAP as Record<string, { label: string }>)[
+                                f
+                              ]?.label ?? f
+                          )
                           .filter(Boolean)
                           .join(" · ")}
                       </p>

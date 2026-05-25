@@ -25,6 +25,9 @@ export function SiteHeader() {
           <Link href="/voice" className="hover:text-white transition">
             Voice
           </Link>
+          <Link href="/formats" className="hover:text-white transition">
+            Formats
+          </Link>
           <Link href="/#faq" className="hover:text-white transition">
             FAQ
           </Link>

@@ -111,11 +111,21 @@ export interface VoiceProfileForPrompt {
   samples?: string[];
 }
 
+/**
+ * Build system prompt for a format.
+ *
+ * `formatBody` overrides the built-in format instructions when provided
+ * (used for user-defined custom formats). When omitted, falls back to
+ * the built-in FORMAT_INSTRUCTIONS for `formatId`.
+ */
 export function buildSystemPrompt(
-  formatId: FormatId,
-  voiceProfile?: VoiceProfileForPrompt
+  formatId: FormatId | string,
+  voiceProfile?: VoiceProfileForPrompt,
+  formatBody?: string
 ): string {
-  let prompt = `${SYSTEM_BASE}\n\n---\n\nFORMAT TASK:\n${FORMAT_INSTRUCTIONS[formatId]}`;
+  const body =
+    formatBody ?? FORMAT_INSTRUCTIONS[formatId as FormatId] ?? "";
+  let prompt = `${SYSTEM_BASE}\n\n---\n\nFORMAT TASK:\n${body}`;
 
   if (voiceProfile) {
     const hasInstructions =
