@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
 import { getAnthropic, DEFAULT_MODEL, MAX_OUTPUT_TOKENS } from "@/lib/anthropic";
-import { buildSystemPrompt, buildUserPrompt } from "@/lib/prompts";
+import {
+  buildSystemPrompt,
+  buildUserPrompt,
+  type VoiceProfileForPrompt,
+} from "@/lib/prompts";
 import { FORMAT_MAP, type FormatId } from "@/lib/formats";
 import { checkAndConsume } from "@/lib/rate-limit";
 
@@ -11,11 +16,15 @@ interface GenerateBody {
   source: string;
   formats: FormatId[];
   extraInstructions?: string;
+  voiceProfile?: VoiceProfileForPrompt;
+  /** Bring-Your-Own-Key — if provided, skips rate limit and uses it instead of the server key. */
+  apiKey?: string;
 }
 
 const MIN_SOURCE_CHARS = 120;
 const MAX_SOURCE_CHARS = 30_000;
-const MAX_FORMATS = 5;
+const MAX_FORMATS = 7;
+const BYOK_PREFIX = "sk-ant-";
 
 function getClientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for");
@@ -38,6 +47,9 @@ export async function POST(req: NextRequest) {
     (f): f is FormatId => typeof f === "string" && f in FORMAT_MAP
   );
   const extra = body.extraInstructions?.trim();
+  const voiceProfile = body.voiceProfile;
+  const byokKey = body.apiKey?.trim();
+  const usingByok = Boolean(byokKey && byokKey.startsWith(BYOK_PREFIX));
 
   if (source.length < MIN_SOURCE_CHARS) {
     return NextResponse.json(
@@ -65,10 +77,24 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
+  if (byokKey && !usingByok) {
+    return NextResponse.json(
+      { error: "BYOK key must start with sk-ant-." },
+      { status: 400 }
+    );
+  }
 
-  // Rate limit (one request consumes one slot, regardless of how many formats)
+  // Rate limit only applies to non-BYOK users
   const ip = getClientIp(req);
-  const rl = checkAndConsume(ip);
+  const rl = usingByok
+    ? {
+        allowed: true,
+        remaining: Number.POSITIVE_INFINITY,
+        limit: Number.POSITIVE_INFINITY,
+        resetAtUtc: "",
+      }
+    : checkAndConsume(ip);
+
   if (!rl.allowed) {
     return NextResponse.json(
       {
@@ -80,27 +106,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let client;
+  // Pick the client: BYOK key or server-side env key
+  let client: Anthropic;
   try {
-    client = getAnthropic();
+    client = usingByok ? new Anthropic({ apiKey: byokKey! }) : getAnthropic();
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Server misconfiguration";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
-  // Run all formats in parallel for snappy UX.
+  // Run all formats in parallel
   const results = await Promise.all(
     formats.map(async (formatId) => {
       try {
         const message = await client.messages.create({
           model: DEFAULT_MODEL,
           max_tokens: MAX_OUTPUT_TOKENS,
-          system: buildSystemPrompt(formatId),
+          system: buildSystemPrompt(formatId, voiceProfile),
           messages: [
-            {
-              role: "user",
-              content: buildUserPrompt(source, extra),
-            },
+            { role: "user", content: buildUserPrompt(source, extra) },
           ],
         });
 
@@ -126,10 +150,17 @@ export async function POST(req: NextRequest) {
     })
   );
 
-  return NextResponse.json({
-    results,
-    rateLimit: rl,
-  });
+  // Sanitize rate-limit response for JSON serialization (Infinity → null)
+  const rateLimit = usingByok
+    ? { remaining: null, limit: null, resetAtUtc: "", byok: true }
+    : {
+        remaining: rl.remaining,
+        limit: rl.limit,
+        resetAtUtc: rl.resetAtUtc,
+        byok: false,
+      };
+
+  return NextResponse.json({ results, rateLimit });
 }
 
 export async function GET() {
@@ -140,6 +171,8 @@ export async function GET() {
       source: "string (120–30000 chars)",
       formats: Object.keys(FORMAT_MAP),
       extraInstructions: "optional string",
+      voiceProfile: "optional { instructions?: string, samples?: string[] }",
+      apiKey: "optional sk-ant-... (skips rate limit)",
     },
   });
 }

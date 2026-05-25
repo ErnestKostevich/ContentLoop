@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { AuthButtons } from "@/components/auth-buttons";
 
 export function SiteHeader() {
   return (
@@ -21,12 +22,16 @@ export function SiteHeader() {
           <Link href="/#pricing" className="hover:text-white transition">
             Pricing
           </Link>
+          <Link href="/voice" className="hover:text-white transition">
+            Voice
+          </Link>
           <Link href="/#faq" className="hover:text-white transition">
             FAQ
           </Link>
         </nav>
 
         <div className="flex items-center gap-2">
+          <AuthButtons />
           <Link
             href="/app"
             className="inline-flex h-9 items-center justify-center rounded-lg bg-white px-4 text-sm font-medium text-neutral-950 shadow-sm hover:bg-neutral-200 transition"

@@ -72,13 +72,81 @@ Rules:
 - Each script must stand alone (a viewer who sees only this script must get value).
 - Total spoken words per script: 110–150 (so it fits ~60s at natural pace).
 - Different angle per script (e.g. story / framework / counter-intuitive take). Do not repeat the same idea.`,
+
+  carousel_slides: `Produce a swipeable carousel — 8 slides — designed for LinkedIn or Instagram.
+
+For each slide, output this exact structure:
+
+---
+SLIDE <n>
+TITLE: <≤8 words, large headline text>
+BODY: <≤32 words, the slide's actual content, conversational>
+DESIGN NOTE: <one short directive for the designer/AI image gen — e.g. "big number, gradient bg" or "two-column comparison">
+---
+
+Rules:
+- Slide 1 is a HOOK slide: title must promise a payoff that the carousel delivers.
+- Slide 2 sets context / states the problem.
+- Slides 3–6 deliver the substance (one distinct point per slide).
+- Slide 7 is the WHY-IT-MATTERS slide (consequence, stakes, what changes).
+- Slide 8 is the CTA slide: follow / save / comment prompt + one line of branded sign-off.
+- Use concrete numbers where possible. No filler slides.`,
+
+  reddit_post: `Produce a single Reddit post (a self/text post, not a link).
+
+Format:
+- Line 1: "TITLE: <≤140 chars, no clickbait, no all-caps, sounds like a real person>"
+- Line 2: blank
+- Body: 250–500 words. Markdown formatting allowed (paragraphs, **bold**, lists when natural).
+- Open with a specific situation or stake — never "hello everyone" or "I wanted to share."
+- Voice: thoughtful, direct, slightly self-deprecating. Like a top-comment in r/Entrepreneur or r/personalfinance.
+- Include at least one concrete number, name, or detail that makes it feel lived.
+- End with a real question that invites discussion (not "what do you guys think?").
+- Suggest a subreddit on the final line: "SUGGESTED SUBREDDIT: r/<name>"
+- No hashtags. No emojis except where they genuinely fit the post's tone.`,
 };
 
-export function buildSystemPrompt(formatId: FormatId): string {
-  return `${SYSTEM_BASE}\n\n---\n\nFORMAT TASK:\n${FORMAT_INSTRUCTIONS[formatId]}`;
+export interface VoiceProfileForPrompt {
+  instructions?: string;
+  samples?: string[];
 }
 
-export function buildUserPrompt(sourceText: string, extraInstructions?: string): string {
+export function buildSystemPrompt(
+  formatId: FormatId,
+  voiceProfile?: VoiceProfileForPrompt
+): string {
+  let prompt = `${SYSTEM_BASE}\n\n---\n\nFORMAT TASK:\n${FORMAT_INSTRUCTIONS[formatId]}`;
+
+  if (voiceProfile) {
+    const hasInstructions =
+      voiceProfile.instructions && voiceProfile.instructions.trim().length > 0;
+    const samples = (voiceProfile.samples ?? [])
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+      .slice(0, 5);
+
+    if (hasInstructions || samples.length > 0) {
+      prompt += `\n\n---\n\nVOICE PROFILE — this creator's style. Match it precisely.`;
+      if (hasInstructions) {
+        prompt += `\n\nStyle rules from the creator:\n${voiceProfile.instructions!.trim()}`;
+      }
+      if (samples.length > 0) {
+        prompt +=
+          `\n\nReference samples of the creator's past writing. Mirror diction, rhythm, sentence length, opinion strength, and emoji habits. Do NOT copy phrases.\n\n` +
+          samples
+            .map((s, i) => `<<SAMPLE_${i + 1}>>\n${s}\n<<END_SAMPLE_${i + 1}>>`)
+            .join("\n\n");
+      }
+    }
+  }
+
+  return prompt;
+}
+
+export function buildUserPrompt(
+  sourceText: string,
+  extraInstructions?: string
+): string {
   const trimmed = sourceText.trim();
   let prompt = `Source material:\n\n<<<\n${trimmed}\n>>>`;
   if (extraInstructions && extraInstructions.trim().length > 0) {

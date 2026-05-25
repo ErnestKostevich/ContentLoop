@@ -3,7 +3,9 @@ export type FormatId =
   | "linkedin_post"
   | "instagram_caption"
   | "newsletter"
-  | "shorts_scripts";
+  | "shorts_scripts"
+  | "carousel_slides"
+  | "reddit_post";
 
 export interface FormatDef {
   id: FormatId;
@@ -48,6 +50,20 @@ export const FORMATS: FormatDef[] = [
     description: "3 vertical-video scripts (≤60s each)",
     icon: "Video",
     color: "from-rose-500 to-red-600",
+  },
+  {
+    id: "carousel_slides",
+    label: "Carousel slides",
+    description: "8 swipeable slides for LinkedIn / IG",
+    icon: "Layers",
+    color: "from-amber-400 to-orange-600",
+  },
+  {
+    id: "reddit_post",
+    label: "Reddit post",
+    description: "Title + body that survives Reddit's BS detector",
+    icon: "Flame",
+    color: "from-orange-500 to-rose-600",
   },
 ];
 
