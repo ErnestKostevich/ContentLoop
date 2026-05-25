@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+}
+
+/* Subtle scrollbar polish (Webkit) */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
+
+/* Aurora background used on the landing hero */
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: aurora-float 18s ease-in-out infinite alternate;
+}
+.aurora::before {
+  background: radial-gradient(
+    circle at 30% 30%,
+    #6366f1 0%,
+    transparent 60%
+  );
+  top: -20vmax;
+  left: -10vmax;
+}
+.aurora::after {
+  background: radial-gradient(
+    circle at 70% 70%,
+    #ec4899 0%,
+    transparent 60%
+  );
+  bottom: -25vmax;
+  right: -15vmax;
+  animation-delay: -6s;
+}
+
+@keyframes aurora-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(4vmax, -3vmax, 0) scale(1.1);
+  }
+}
+
+/* Animated gradient text utility */
+.text-gradient {
+  background: linear-gradient(
+    90deg,
+    #a5b4fc 0%,
+    #f0abfc 50%,
+    #fda4af 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Card hover lift */
+.lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Subtle pulse for the live dot */
+.pulse-dot {
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
