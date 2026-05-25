@@ -18,11 +18,13 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { UpgradeButton } from "@/components/upgrade-button";
 import { FORMATS } from "@/lib/formats";
-import { isStripeEnabledServer } from "@/lib/stripe";
+import { activeProviderServer } from "@/lib/payments";
 import { hasServerKey } from "@/lib/anthropic";
 
 export default function LandingPage() {
-  const stripeEnabled = isStripeEnabledServer();
+  const paymentsProvider = activeProviderServer();
+  const paymentsEnabled = paymentsProvider !== null;
+  const stripeEnabled = paymentsEnabled; // backward-compat alias for existing markup
   const serverKey = hasServerKey();
   return (
     <>
@@ -521,32 +523,37 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
 
           <div className="relative rounded-2xl border border-fuchsia-500/30 bg-gradient-to-b from-fuchsia-500/[0.07] to-transparent p-6 shadow-[0_0_60px_-30px_rgba(217,70,239,0.6)]">
             <span className="absolute right-5 top-5 rounded-full border border-fuchsia-400/30 bg-fuchsia-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300">
-              {stripeEnabled ? "Most popular" : "Soon"}
+              {paymentsEnabled ? "Most popular" : "Soon"}
             </span>
             <div className="flex items-baseline justify-between">
               <h3 className="text-lg font-semibold">Pro</h3>
               <div>
                 <span className="text-2xl font-semibold">$9</span>
-                <span className="ml-1 text-sm text-neutral-400">/mo</span>
+                <span className="ml-1 text-sm text-neutral-400">/30 days</span>
               </div>
             </div>
             <p className="mt-1 text-sm text-neutral-400">
-              Premium features. Still BYOK for AI.
+              {paymentsProvider === "nowpayments"
+                ? "Pay in any crypto — BTC, ETH, USDT, and 200+ more."
+                : "Premium features. Still BYOK for AI."}
             </p>
             <ul className="mt-5 space-y-2 text-sm text-neutral-300">
-              <Feature>Cross-device sync (voice + history)</Feature>
               <Feature>
-                <strong className="text-white">Brand kits</strong> — multiple
+                <strong className="text-white">Brand kits</strong> — unlimited
                 voice profiles for clients
               </Feature>
               <Feature>
-                <strong className="text-white">Custom formats</strong> —
-                define your own platform-specific prompts
+                <strong className="text-white">Custom formats</strong> — up to
+                12 user-defined output formats
               </Feature>
-              <Feature>Bulk mode — multiple sources at once</Feature>
+              <Feature>
+                <strong className="text-white">Export</strong> as Markdown / JSON
+              </Feature>
+              <Feature>Cross-device sync (soon)</Feature>
+              <Feature>Bulk mode — multiple sources at once (soon)</Feature>
               <Feature>Priority support</Feature>
             </ul>
-            <UpgradeButton enabled={stripeEnabled} />
+            <UpgradeButton enabled={paymentsEnabled} />
           </div>
         </div>
 

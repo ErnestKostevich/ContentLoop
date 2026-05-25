@@ -41,7 +41,10 @@ Why this matters:
 | Cost transparency | ✅ | Every run shows actual tokens used + USD cost |
 | Optional server-key fallback | ✅ | Set `ANTHROPIC_API_KEY` in env for a 3/day free tier (your own cost) |
 | Auth (Clerk) | 🔌 Scaffolded | Add keys to `.env.local` to turn on |
-| Stripe Pro ($9/mo) | 🔌 Scaffolded | Premium features, not AI access |
+| Pro plan ($9 / 30d) | ✅ | Premium features (Custom Formats, Brand Kits, Export). KYC-free via NOWPayments OR Stripe |
+| Custom Formats | ✅ | Up to 12 user-defined formats with full prompt control |
+| Brand Kits | ✅ | Multiple voice profiles per browser (Pro = unlimited) |
+| Export results | ✅ | Download a run as Markdown or JSON |
 | Tip jar | ✅ | Set `NEXT_PUBLIC_TIP_JAR_URL` for footer link |
 | Cross-device sync (Pro) | ⏳ v0.3 | Postgres backed |
 | Brand kits, custom formats (Pro) | ⏳ v0.3 | Multiple voice profiles, user-defined formats |
@@ -139,12 +142,38 @@ proxy.ts                         # Next 16 "middleware" (no-op until Clerk is co
 
 3. The Sign-in button + UserButton appear automatically. Add protected routes to `proxy.ts`.
 
-## Enabling payments (Stripe Pro)
+## Enabling payments (Pro plan, $9 for 30 days)
 
-The Pro plan is for **premium features**, not AI access — every user still
-brings their own Anthropic key.
+The Pro plan is for **premium features** (Custom Formats, Brand Kits,
+Export, sync) — not AI access. Every user still brings their own
+Anthropic key.
 
-1. Create a Stripe account and a recurring price for the Pro plan ($9/mo by default).
+Two payment providers are wired. Pick one. If both are set, NOWPayments wins.
+
+### Option A — NOWPayments (no KYC, crypto) — recommended
+
+1. Sign up at <https://nowpayments.io>. No KYC for the merchant.
+2. Dashboard → **Store settings → API keys** → create a key.
+3. Dashboard → **Account → IPN settings** → set a strong IPN secret + set
+   the IPN callback URL to `https://YOUR-DOMAIN/api/webhook/nowpayments`.
+4. Add to `.env.local`:
+
+   ```ini
+   NOWPAYMENTS_API_KEY=XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX
+   NOWPAYMENTS_IPN_SECRET=your-strong-secret
+   NEXT_PUBLIC_PAYMENTS_PROVIDER=nowpayments
+   NEXT_PUBLIC_APP_URL=https://your-domain.com
+   ```
+
+5. Done. The Pro card on `/` shows "Pay in any crypto — BTC, ETH, USDT, …"
+   and the Upgrade button creates a hosted invoice on NOWPayments.
+
+**Receiving funds:** withdraw to a crypto wallet (no KYC). Converting to
+fiat may require KYC at the exchange you use — that's outside NOWPayments.
+
+### Option B — Stripe (requires KYC)
+
+1. Create a Stripe account and a recurring price for the Pro plan.
 2. Add to `.env.local`:
 
    ```ini

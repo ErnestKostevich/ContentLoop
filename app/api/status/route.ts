@@ -1,21 +1,19 @@
 import { NextResponse } from "next/server";
 import { hasServerKey } from "@/lib/anthropic";
-import { isStripeEnabledServer } from "@/lib/stripe";
+import { activeProviderServer } from "@/lib/payments";
 import { isClerkEnabledServer } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
 /**
  * Returns what's enabled on this deploy. The client uses this to decide
- * whether the user MUST bring their own key, and whether Pro/auth UI
- * should appear.
+ * whether the user MUST bring their own key, whether to show Sign in,
+ * and what payment provider to surface in the UI.
  */
 export async function GET() {
   return NextResponse.json({
-    // True when the deploy itself has an ANTHROPIC_API_KEY — in zero-cost
-    // mode this is false and users must add their own key in Settings.
     serverKey: hasServerKey(),
     auth: isClerkEnabledServer(),
-    payments: isStripeEnabledServer(),
+    paymentsProvider: activeProviderServer(), // "nowpayments" | "stripe" | null
   });
 }

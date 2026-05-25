@@ -55,7 +55,7 @@ import {
   type CustomFormat,
 } from "@/lib/storage";
 import { estimateCostUsd, formatUsd } from "@/lib/pricing";
-import { setProUnlocked } from "@/lib/pro";
+import { extendPro } from "@/lib/pro";
 import { OnboardingModal } from "@/components/onboarding-modal";
 import { ExportResults } from "@/components/export-results";
 
@@ -159,13 +159,16 @@ export function Workspace() {
     setByokKey(storedKey);
     setHydrated(true);
 
-    // Handle Stripe success_url callback: ?upgraded=1
+    // Handle payment provider success_url callback: ?upgraded=1
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get("upgraded") === "1") {
-        setProUnlocked(true);
+        // Optimistically extend Pro by 30 days. The provider's webhook
+        // is the source of truth (will replace this when DB lands).
+        extendPro(30);
         params.delete("upgraded");
         params.delete("session_id");
+        params.delete("order_id");
         const url = new URL(window.location.href);
         url.search = params.toString();
         window.history.replaceState({}, "", url.toString());
