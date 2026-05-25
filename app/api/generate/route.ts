@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { getAnthropic, DEFAULT_MODEL, MAX_OUTPUT_TOKENS } from "@/lib/anthropic";
+import {
+  getAnthropic,
+  hasServerKey,
+  DEFAULT_MODEL,
+  MAX_OUTPUT_TOKENS,
+} from "@/lib/anthropic";
 import {
   buildSystemPrompt,
   buildUserPrompt,
@@ -17,7 +22,7 @@ interface GenerateBody {
   formats: FormatId[];
   extraInstructions?: string;
   voiceProfile?: VoiceProfileForPrompt;
-  /** Bring-Your-Own-Key — if provided, skips rate limit and uses it instead of the server key. */
+  /** Bring-Your-Own-Key. When server has no key, this is REQUIRED. */
   apiKey?: string;
 }
 
@@ -50,6 +55,7 @@ export async function POST(req: NextRequest) {
   const voiceProfile = body.voiceProfile;
   const byokKey = body.apiKey?.trim();
   const usingByok = Boolean(byokKey && byokKey.startsWith(BYOK_PREFIX));
+  const serverKeyAvailable = hasServerKey();
 
   if (source.length < MIN_SOURCE_CHARS) {
     return NextResponse.json(
@@ -79,31 +85,58 @@ export async function POST(req: NextRequest) {
   }
   if (byokKey && !usingByok) {
     return NextResponse.json(
-      { error: "BYOK key must start with sk-ant-." },
+      { error: "Your API key must start with sk-ant-." },
       { status: 400 }
     );
   }
 
-  // Rate limit only applies to non-BYOK users
-  const ip = getClientIp(req);
-  const rl = usingByok
-    ? {
-        allowed: true,
-        remaining: Number.POSITIVE_INFINITY,
-        limit: Number.POSITIVE_INFINITY,
-        resetAtUtc: "",
-      }
-    : checkAndConsume(ip);
-
-  if (!rl.allowed) {
+  // ─── Auth: BYOK > server key > 401
+  if (!usingByok && !serverKeyAvailable) {
     return NextResponse.json(
       {
-        error: "Daily free limit reached.",
-        upgrade: true,
-        rateLimit: rl,
+        error:
+          "Bring your own Anthropic API key to generate. Open Settings → paste your sk-ant-… key. It stays in your browser.",
+        byokRequired: true,
       },
-      { status: 429 }
+      { status: 401 }
     );
+  }
+
+  // Rate limit only applies when we're spending the server's key
+  const ip = getClientIp(req);
+  let rateLimit: {
+    remaining: number | null;
+    limit: number | null;
+    resetAtUtc: string;
+    byok: boolean;
+  };
+
+  if (usingByok) {
+    rateLimit = { remaining: null, limit: null, resetAtUtc: "", byok: true };
+  } else {
+    const rl = checkAndConsume(ip);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        {
+          error:
+            "Daily free limit reached. Add your own Anthropic key in Settings for unlimited generations.",
+          byokRequired: true,
+          rateLimit: {
+            remaining: 0,
+            limit: rl.limit,
+            resetAtUtc: rl.resetAtUtc,
+            byok: false,
+          },
+        },
+        { status: 429 }
+      );
+    }
+    rateLimit = {
+      remaining: rl.remaining,
+      limit: rl.limit,
+      resetAtUtc: rl.resetAtUtc,
+      byok: false,
+    };
   }
 
   // Pick the client: BYOK key or server-side env key
@@ -150,16 +183,6 @@ export async function POST(req: NextRequest) {
     })
   );
 
-  // Sanitize rate-limit response for JSON serialization (Infinity → null)
-  const rateLimit = usingByok
-    ? { remaining: null, limit: null, resetAtUtc: "", byok: true }
-    : {
-        remaining: rl.remaining,
-        limit: rl.limit,
-        resetAtUtc: rl.resetAtUtc,
-        byok: false,
-      };
-
   return NextResponse.json({ results, rateLimit });
 }
 
@@ -167,12 +190,15 @@ export async function GET() {
   return NextResponse.json({
     name: "ContentLoop /api/generate",
     method: "POST",
+    serverKey: hasServerKey(),
     body: {
       source: "string (120–30000 chars)",
       formats: Object.keys(FORMAT_MAP),
       extraInstructions: "optional string",
       voiceProfile: "optional { instructions?: string, samples?: string[] }",
-      apiKey: "optional sk-ant-... (skips rate limit)",
+      apiKey: hasServerKey()
+        ? "optional sk-ant-... (skips rate limit when set)"
+        : "REQUIRED sk-ant-... (server has no key)",
     },
   });
 }

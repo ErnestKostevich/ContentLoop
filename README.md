@@ -5,22 +5,27 @@ ContentLoop gives you 7 platform-native posts — Twitter/X thread, LinkedIn pos
 Instagram caption, email newsletter, Shorts scripts, LinkedIn/IG carousel,
 and a Reddit post — in your voice, in one click.
 
-Powered by [Anthropic Claude Sonnet 4.5](https://www.anthropic.com/news/claude-sonnet-4-5).
+Powered by [Anthropic Claude Sonnet 4.5](https://www.anthropic.com/news/claude-sonnet-4-5),
+through **your own** Anthropic API key.
 
 ---
 
-## Why this exists
+## The model: zero-cost for the operator, transparent for users
 
-Content repurposing is the highest-leverage skill in creator economics:
-one piece of long-form work → traffic on seven different platforms.
-Doing it by hand takes 2–4 hours per source. Most AI tools spit out
-generic slop that screams "AI."
+ContentLoop is a **BYOK (Bring Your Own Key)** product. Every user pastes their
+own Anthropic API key once; it lives in their browser, and ContentLoop calls
+Anthropic on their behalf.
 
-ContentLoop nails three things:
+Why this matters:
 
-1. **Platform-native output.** Different lengths, hooks, structures per channel.
-2. **Voice matching.** Paste 2–5 of your past posts → the model mirrors your voice.
-3. **Speed.** All formats render in parallel — ~8s end-to-end.
+- **You (the operator) pay $0 for AI usage.** No Anthropic bill at all.
+  Hosting is the only meaningful cost, which is free-tier on Vercel until
+  you have real traffic.
+- **Users pay Anthropic directly at wholesale rates** — typically
+  $0.005–$0.02 per generation. No markup, no surprise bills, no subscription
+  required to use the core product.
+- **Monetization comes from premium features** (sync, brand kits, custom
+  formats, teams), not from gating AI access. That's what Stripe Pro is for.
 
 ## Features
 
@@ -31,23 +36,42 @@ ContentLoop nails three things:
 | Voice profile (samples + rules) | ✅ | Saved in browser, applied per generation |
 | URL import | ✅ | Paste an article URL, we fetch & extract the body |
 | Generation history | ✅ | Last 30 runs, browser-local |
-| BYOK | ✅ | Paste your own Anthropic key → bypass free-tier limit |
-| Freemium rate-limit | ✅ | 3 generations/day per IP (in-memory) |
-| Auth (Clerk) | 🔌 Scaffolded | Add keys to .env.local to turn on |
-| Stripe Pro ($19/mo) | 🔌 Scaffolded | Add keys + price ID to activate checkout |
-| Video repurposer (YouTube → Shorts) | ⏳ Phase 3 | Whisper + FFmpeg pipeline |
-| Chrome extension | ⏳ Future | One-click repurpose for any page |
+| **BYOK (default)** | ✅ | User's own Anthropic key; encrypted in `localStorage` |
+| First-visit onboarding | ✅ | Modal walks new users through getting + pasting their key |
+| Cost transparency | ✅ | Every run shows actual tokens used + USD cost |
+| Optional server-key fallback | ✅ | Set `ANTHROPIC_API_KEY` in env for a 3/day free tier (your own cost) |
+| Auth (Clerk) | 🔌 Scaffolded | Add keys to `.env.local` to turn on |
+| Stripe Pro ($9/mo) | 🔌 Scaffolded | Premium features, not AI access |
+| Tip jar | ✅ | Set `NEXT_PUBLIC_TIP_JAR_URL` for footer link |
+| Cross-device sync (Pro) | ⏳ v0.3 | Postgres backed |
+| Brand kits, custom formats (Pro) | ⏳ v0.3 | Multiple voice profiles, user-defined formats |
+| Video repurposer | ⏳ v0.4 | YouTube → Shorts with FFmpeg + Whisper |
+| Chrome extension | ⏳ v0.6 | One-click repurpose for any page |
+
+## Two deploy modes
+
+### Mode A — Pure BYOK (recommended, $0 cost to you)
+
+Don't set `ANTHROPIC_API_KEY` in your env. Users **must** add their own key
+on first visit (onboarding modal does this automatically). You pay nothing
+for AI usage.
+
+### Mode B — Hybrid free tier
+
+Set `ANTHROPIC_API_KEY` in env. Users get 3 free generations/day before
+needing to BYOK. You pay for those 3 runs/day/IP — typically pennies, but
+not zero. Useful when you want the lowest-friction "try it now" experience.
 
 ## Tech
 
 - Next.js 16 (App Router) + TypeScript
 - Tailwind CSS v4
-- Anthropic Claude Sonnet 4.5 via `@anthropic-ai/sdk`
+- Anthropic Claude Sonnet 4.5 via `@anthropic-ai/sdk` (always called with the user's key when BYOK)
 - Cheerio (URL parsing)
 - Clerk (auth, optional)
 - Stripe (payments, optional)
 - Lucide icons
-- Zero-DB MVP — in-memory rate limiting + localStorage (upgrade path: Upstash + Postgres)
+- Zero-DB MVP — `localStorage` for voice/history, in-memory rate limit for the optional free tier
 
 ## Local setup
 
@@ -57,8 +81,8 @@ npm install
 
 # 2. Create your .env.local from the example
 Copy-Item .env.example .env.local
-# then paste your ANTHROPIC_API_KEY (required)
-# Clerk + Stripe blocks are optional — leave them commented to keep auth/payments off
+# Leave ANTHROPIC_API_KEY commented for Mode A (zero-cost BYOK).
+# Fill it in for Mode B (you absorb the small free-tier cost).
 
 # 3. Run the dev server
 npm run dev
@@ -70,11 +94,12 @@ Open <http://localhost:3000>.
 
 ```
 app/
-  page.tsx                       # Landing (hero, samples, comparison, testimonials, pricing, FAQ)
+  page.tsx                       # Landing (hero, samples, comparison, BYOK costs, pricing, FAQ)
   app/page.tsx                   # Workspace (paste → formats → generate)
   voice/page.tsx                 # Voice profile editor
-  api/generate/route.ts          # POST: parallel multi-format generation
+  api/generate/route.ts          # POST: parallel multi-format generation (BYOK > server key > 401)
   api/fetch-url/route.ts         # POST: import article body from a URL
+  api/status/route.ts            # GET: feature flags (server key? auth? payments?)
   api/checkout/route.ts          # POST: Stripe Checkout session (Pro plan)
   api/webhook/stripe/route.ts    # POST: Stripe webhook receiver
   layout.tsx                     # Root layout w/ optional ClerkProvider
@@ -82,6 +107,8 @@ app/
 components/
   workspace.tsx                  # Main app — input, formats, history drawer, settings
   voice-profile-editor.tsx       # /voice page UI
+  onboarding-modal.tsx           # First-visit BYOK setup
+  tip-jar.tsx                    # Optional "Buy me a coffee" link
   site-header.tsx
   site-footer.tsx
   auth-provider.tsx              # Conditional ClerkProvider
@@ -90,8 +117,9 @@ components/
 lib/
   formats.ts                     # 7 output format definitions
   prompts.ts                     # System + user prompt builders, per-format rules + voice profile
-  anthropic.ts                   # SDK client (lazy)
-  rate-limit.ts                  # In-memory daily limiter
+  anthropic.ts                   # SDK client (lazy) + hasServerKey() flag
+  pricing.ts                     # Sonnet 4.5 pricing constants + cost helpers (client-safe)
+  rate-limit.ts                  # In-memory daily limiter (Mode B only)
   storage.ts                     # Client-side localStorage helpers (voice / history / BYOK)
   stripe.ts                      # Stripe SDK + feature flag
   auth.ts                        # Clerk feature flags
@@ -111,9 +139,12 @@ proxy.ts                         # Next 16 "middleware" (no-op until Clerk is co
 
 3. The Sign-in button + UserButton appear automatically. Add protected routes to `proxy.ts`.
 
-## Enabling payments (Stripe)
+## Enabling payments (Stripe Pro)
 
-1. Create a Stripe account and a recurring price for the Pro plan.
+The Pro plan is for **premium features**, not AI access — every user still
+brings their own Anthropic key.
+
+1. Create a Stripe account and a recurring price for the Pro plan ($9/mo by default).
 2. Add to `.env.local`:
 
    ```ini
@@ -130,14 +161,32 @@ proxy.ts                         # Next 16 "middleware" (no-op until Clerk is co
    stripe listen --forward-to localhost:3000/api/webhook/stripe
    ```
 
+## Enabling the tip jar
+
+Set `NEXT_PUBLIC_TIP_JAR_URL` to any URL (Ko-fi, Buy Me a Coffee, PayPal,
+Patreon, GitHub Sponsors). A small footer link appears automatically.
+
+## Deployment
+
+Recommended: Vercel.
+
+1. Push to GitHub (already done if you're reading this in the repo).
+2. Import the repo at <https://vercel.com/new>.
+3. Add env vars in Vercel dashboard. For Mode A: **don't add `ANTHROPIC_API_KEY`**.
+4. Deploy.
+
+Free tier on Vercel comfortably handles thousands of users for a BYOK
+product like this — there's no LLM cost, no DB cost, no background jobs.
+
 ## Roadmap
 
 - [x] **v0.1 — MVP.** 5 formats, parallel generation, freemium rate limit.
-- [x] **v0.2 — Phase 2.** Voice profile, history, URL import, BYOK, 2 extra formats, Clerk + Stripe scaffolds, polished landing.
-- [ ] **v0.3 — DB layer.** Postgres + Drizzle. Sync voice profiles + history across devices.
-- [ ] **v0.4 — Video repurposer.** YouTube URL → Whisper transcript → AI-picked viral clips with burned-in subtitles.
-- [ ] **v0.5 — Brand kits.** Save multiple voice profiles (personal vs client vs newsletter).
-- [ ] **v0.6 — Chrome extension.** One-click repurpose for any page.
+- [x] **v0.2 — Phase 2.** Voice profile, history, URL import, BYOK, +2 formats, Clerk + Stripe scaffolds, polished landing.
+- [x] **v0.3 — Zero-cost pivot.** BYOK-first architecture, onboarding flow, cost transparency, tip jar, repositioned pricing.
+- [ ] **v0.4 — DB layer.** Postgres + Drizzle. Cross-device voice/history sync. Powers the Pro plan.
+- [ ] **v0.5 — Brand kits + custom formats.** Pro-tier feature surface.
+- [ ] **v0.6 — Video repurposer.** YouTube URL → Whisper transcript → clipped Shorts with burned subtitles.
+- [ ] **v0.7 — Chrome extension.** One-click repurpose for any page.
 - [ ] **v1.0 — Teams.** Shared workspaces + per-seat billing.
 
 ## License

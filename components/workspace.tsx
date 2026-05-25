@@ -41,6 +41,8 @@ import {
   type HistoryEntry,
   type VoiceProfile,
 } from "@/lib/storage";
+import { estimateCostUsd, formatUsd } from "@/lib/pricing";
+import { OnboardingModal } from "@/components/onboarding-modal";
 
 const ICONS: Record<string, LucideIcon> = {
   Hash,
@@ -57,6 +59,7 @@ interface GenResult {
   ok: boolean;
   text?: string;
   error?: string;
+  usage?: { input: number; output: number };
 }
 
 interface RateLimit {
@@ -71,6 +74,7 @@ interface ApiResponse {
   rateLimit?: RateLimit;
   error?: string;
   upgrade?: boolean;
+  byokRequired?: boolean;
 }
 
 const SAMPLE_TEXT = `The hardest part of building a product company isn't writing the code. It's the cold, repeated work of putting that product in front of strangers and watching most of them shrug.
@@ -114,17 +118,37 @@ export function Workspace() {
   const [byokKey, setByokKey] = useState("");
   const [hydrated, setHydrated] = useState(false);
 
+  // ─── server status (BYOK required?)
+  const [serverHasKey, setServerHasKey] = useState<boolean | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
   useEffect(() => {
     setVoiceProfile(loadVoiceProfile());
     setHistory(loadHistory());
-    setByokKey(loadByokKey() ?? "");
+    const storedKey = loadByokKey() ?? "";
+    setByokKey(storedKey);
     setHydrated(true);
+
+    // Probe server for its capability set
+    fetch("/api/status")
+      .then((r) => r.json())
+      .then((s: { serverKey?: boolean }) => {
+        const has = Boolean(s.serverKey);
+        setServerHasKey(has);
+        // First-visit onboarding: only if user has no key AND server has no key
+        if (!has && !storedKey) {
+          setShowOnboarding(true);
+        }
+      })
+      .catch(() => setServerHasKey(false));
   }, []);
 
   const charCount = source.length;
   const charsOk = charCount >= 120 && charCount <= 30_000;
-  const canGenerate = !loading && charsOk && selected.size > 0;
   const usingByok = byokKey.trim().startsWith("sk-ant-");
+  const needsByok = serverHasKey === false && !usingByok;
+  const canGenerate =
+    !loading && charsOk && selected.size > 0 && !needsByok;
 
   function toggle(id: FormatId) {
     setSelected((prev) => {
@@ -189,6 +213,7 @@ export function Workspace() {
         setError(data.error ?? "Generation failed.");
         if (data.upgrade) setUpgrade(true);
         if (data.rateLimit) setRateLimit(data.rateLimit);
+        if (data.byokRequired) setShowOnboarding(true);
       } else if (data.results) {
         setResults(data.results);
         if (data.rateLimit) setRateLimit(data.rateLimit);
@@ -403,17 +428,23 @@ export function Workspace() {
                 ? ` — need ${120 - charCount} more`
                 : ""}
             </span>
-            {rateLimit && rateLimit.byok && (
-              <span className="text-indigo-300">∞ via BYOK</span>
+            {usingByok && (
+              <span className="text-indigo-300">∞ via your key</span>
             )}
-            {rateLimit &&
-              !rateLimit.byok &&
-              rateLimit.remaining !== null &&
-              rateLimit.limit !== null && (
-                <span className="text-neutral-500">
-                  {rateLimit.remaining}/{rateLimit.limit} free today
-                </span>
-              )}
+            {!usingByok && rateLimit && !rateLimit.byok && rateLimit.remaining !== null && rateLimit.limit !== null && (
+              <span className="text-neutral-500">
+                {rateLimit.remaining}/{rateLimit.limit} free today
+              </span>
+            )}
+            {!usingByok && needsByok && (
+              <button
+                type="button"
+                onClick={() => setShowOnboarding(true)}
+                className="text-fuchsia-300 hover:text-fuchsia-200 transition"
+              >
+                Add API key →
+              </button>
+            )}
           </div>
 
           <h2 className="mt-8 text-lg font-semibold">2. Output formats</h2>
@@ -482,29 +513,40 @@ export function Workspace() {
                 {selected.size} format{selected.size === 1 ? "" : "s"} selected
               </span>
             )}
-            <button
-              type="button"
-              onClick={generate}
-              disabled={!canGenerate}
-              className={cn(
-                "inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition",
-                canGenerate
-                  ? "bg-white text-neutral-950 shadow-lg shadow-black/30 hover:bg-neutral-200"
-                  : "cursor-not-allowed bg-neutral-800 text-neutral-500"
-              )}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Generating…
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Generate
-                </>
-              )}
-            </button>
+            {needsByok ? (
+              <button
+                type="button"
+                onClick={() => setShowOnboarding(true)}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 px-5 text-sm font-semibold text-white shadow-lg shadow-fuchsia-500/20 hover:opacity-95 transition"
+              >
+                <KeyRound className="h-4 w-4" />
+                Add your API key to generate
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={generate}
+                disabled={!canGenerate}
+                className={cn(
+                  "inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition",
+                  canGenerate
+                    ? "bg-white text-neutral-950 shadow-lg shadow-black/30 hover:bg-neutral-200"
+                    : "cursor-not-allowed bg-neutral-800 text-neutral-500"
+                )}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Generating…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Generate
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </section>
 
@@ -512,11 +554,7 @@ export function Workspace() {
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">3. Your results</h2>
-            {results && (
-              <span className="text-xs text-neutral-500">
-                {results.length} ready
-              </span>
-            )}
+            {results && <CostSummary results={results} />}
           </div>
 
           {!loading && !results && !error && <EmptyState />}
@@ -531,9 +569,9 @@ export function Workspace() {
                   </p>
                   {upgrade && (
                     <p className="mt-2 text-xs text-amber-200/80">
-                      Free plan is capped at 3 generations/day. Add your own
-                      Anthropic key in Settings to bypass the limit, or
-                      upgrade to Pro (coming soon).
+                      Free quota is 3 generations/day. Add your own Anthropic
+                      key in Settings for unlimited runs at your own (very
+                      small) cost.
                     </p>
                   )}
                 </div>
@@ -607,11 +645,57 @@ export function Workspace() {
           onClose={() => setShowSettings(false)}
         />
       )}
+
+      {/* ─────────── First-visit onboarding ─────────── */}
+      {showOnboarding && (
+        <OnboardingModal
+          onSave={(key) => {
+            setByokKey(key);
+            saveByokKey(key);
+            setShowOnboarding(false);
+            setError(null);
+          }}
+          onClose={
+            // Allow close only if there's a way to proceed — server key
+            // is set OR user already has a key stored.
+            serverHasKey || usingByok
+              ? () => setShowOnboarding(false)
+              : undefined
+          }
+        />
+      )}
     </div>
   );
 }
 
 /* ──────────────────────── sub-components ──────────────────────── */
+
+function CostSummary({ results }: { results: GenResult[] }) {
+  const totals = results.reduce(
+    (acc, r) => {
+      if (r.usage) {
+        acc.input += r.usage.input;
+        acc.output += r.usage.output;
+      }
+      return acc;
+    },
+    { input: 0, output: 0 }
+  );
+  if (totals.input === 0 && totals.output === 0) {
+    return (
+      <span className="text-xs text-neutral-500">{results.length} ready</span>
+    );
+  }
+  const cost = estimateCostUsd(totals.input, totals.output);
+  return (
+    <span
+      className="text-xs text-neutral-500"
+      title={`${totals.input.toLocaleString()} input + ${totals.output.toLocaleString()} output tokens`}
+    >
+      {results.length} ready · {formatUsd(cost)}
+    </span>
+  );
+}
 
 function EmptyState() {
   return (

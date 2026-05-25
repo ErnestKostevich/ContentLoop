@@ -9,6 +9,9 @@ import {
   ClipboardCopy,
   Repeat,
   Star,
+  KeyRound,
+  ShieldCheck,
+  Coins,
   X as XIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
@@ -16,9 +19,11 @@ import { SiteFooter } from "@/components/site-footer";
 import { UpgradeButton } from "@/components/upgrade-button";
 import { FORMATS } from "@/lib/formats";
 import { isStripeEnabledServer } from "@/lib/stripe";
+import { hasServerKey } from "@/lib/anthropic";
 
 export default function LandingPage() {
   const stripeEnabled = isStripeEnabledServer();
+  const serverKey = hasServerKey();
   return (
     <>
       <SiteHeader />
@@ -39,9 +44,9 @@ export default function LandingPage() {
 
             <p className="mx-auto mt-5 max-w-2xl text-pretty text-base text-neutral-400 sm:text-lg">
               Paste an article, podcast transcript, or YouTube script.
-              ContentLoop gives you a thread, a LinkedIn post, an IG caption,
-              a newsletter, and 3 short-form video scripts — in one click,
-              in your voice.
+              ContentLoop gives you 7 platform-native posts — thread, LinkedIn,
+              IG, newsletter, Shorts, carousel, Reddit — in one click, in
+              your voice.
             </p>
 
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -49,7 +54,9 @@ export default function LandingPage() {
                 href="/app"
                 className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-neutral-950 shadow-lg shadow-black/30 transition hover:bg-neutral-200"
               >
-                Try it free — 3 generations/day
+                {serverKey
+                  ? "Try it free — 3 generations/day"
+                  : "Open the app — bring your own key"}
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
               </Link>
               <Link
@@ -60,9 +67,20 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <p className="mt-4 text-xs text-neutral-500">
-              No signup. No credit card. Just paste and go.
-            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-neutral-500">
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="h-3 w-3 text-emerald-400" />
+                No signup
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="h-3 w-3 text-emerald-400" />
+                No credit card to us
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="h-3 w-3 text-emerald-400" />
+                You own your AI account & costs
+              </span>
+            </div>
           </div>
 
           {/* Format chips preview */}
@@ -399,6 +417,68 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
         </p>
       </section>
 
+      {/* ─────────────────────────── HOW COSTS WORK (BYOK) ─────────────────────────── */}
+      <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
+        <div className="text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-300">
+            Bring your own key
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+            You pay Anthropic. Never us.
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-neutral-400">
+            ContentLoop runs on your own Anthropic API key. No markup, no
+            subscription required, no surprise bills. We just give you the
+            prompt engineering.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-4 md:grid-cols-3">
+          {[
+            {
+              icon: KeyRound,
+              title: "1. Free Anthropic account",
+              body: "Anthropic gives every new user ~$5 of free credit. Enough for hundreds of generations on ContentLoop.",
+            },
+            {
+              icon: Coins,
+              title: "2. Pay-as-you-go pricing",
+              body: "Typical generation: $0.005–$0.02 of your Anthropic credit. That's 50–200 full posts for $1.",
+            },
+            {
+              icon: ShieldCheck,
+              title: "3. Full transparency",
+              body: "Every run shows the actual token usage + USD cost. Your key lives in your browser only.",
+            },
+          ].map((s) => (
+            <div
+              key={s.title}
+              className="lift rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+            >
+              <span className="inline-flex rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 p-2 text-white">
+                <s.icon className="h-4 w-4" />
+              </span>
+              <h3 className="mt-4 text-sm font-semibold text-neutral-100">
+                {s.title}
+              </h3>
+              <p className="mt-1 text-sm text-neutral-400">{s.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.04] p-5 text-sm text-emerald-100">
+          <p>
+            <strong className="font-semibold">Real cost math:</strong>{" "}
+            One source (~2,000 words) → 5 formats generated = roughly
+            10,000 input + 4,000 output tokens =&nbsp;
+            <strong className="text-emerald-50">$0.09 per full run</strong>{" "}
+            (Sonnet 4.5 pricing). A heavy user posting 10 sources a month
+            spends about <strong>$0.90/month</strong> on Anthropic — paid
+            directly to them, not to us.
+          </p>
+        </div>
+      </section>
+
       {/* ─────────────────────────── PRICING ─────────────────────────── */}
       <section id="pricing" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div className="text-center">
@@ -406,7 +486,8 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
             Honest pricing.
           </h2>
           <p className="mt-3 text-neutral-400">
-            Free forever for casual use. Pro for creators who post daily.
+            The tool is free forever. Pro adds premium features for teams
+            and power users.
           </p>
         </div>
 
@@ -417,13 +498,18 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
               <span className="text-2xl font-semibold">$0</span>
             </div>
             <p className="mt-1 text-sm text-neutral-400">
-              Forever. No card.
+              Forever. Just bring your own Anthropic key.
             </p>
             <ul className="mt-5 space-y-2 text-sm text-neutral-300">
-              <Feature>3 generations per day</Feature>
-              <Feature>All 5 output formats</Feature>
-              <Feature>Powered by Claude Sonnet 4.5</Feature>
+              <Feature>
+                <strong className="text-white">Unlimited</strong> generations
+                (pay Anthropic ~$0.01/run)
+              </Feature>
+              <Feature>All 7 output formats</Feature>
+              <Feature>Voice profile training</Feature>
+              <Feature>URL import + history</Feature>
               <Feature>Source up to 30,000 chars</Feature>
+              <Feature>Powered by Claude Sonnet 4.5</Feature>
             </ul>
             <Link
               href="/app"
@@ -435,26 +521,39 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
 
           <div className="relative rounded-2xl border border-fuchsia-500/30 bg-gradient-to-b from-fuchsia-500/[0.07] to-transparent p-6 shadow-[0_0_60px_-30px_rgba(217,70,239,0.6)]">
             <span className="absolute right-5 top-5 rounded-full border border-fuchsia-400/30 bg-fuchsia-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300">
-              {stripeEnabled ? "Most popular" : "Coming soon"}
+              {stripeEnabled ? "Most popular" : "Soon"}
             </span>
             <div className="flex items-baseline justify-between">
               <h3 className="text-lg font-semibold">Pro</h3>
               <div>
-                <span className="text-2xl font-semibold">$19</span>
+                <span className="text-2xl font-semibold">$9</span>
                 <span className="ml-1 text-sm text-neutral-400">/mo</span>
               </div>
             </div>
-            <p className="mt-1 text-sm text-neutral-400">Or $190/yr</p>
+            <p className="mt-1 text-sm text-neutral-400">
+              Premium features. Still BYOK for AI.
+            </p>
             <ul className="mt-5 space-y-2 text-sm text-neutral-300">
-              <Feature>Unlimited generations</Feature>
-              <Feature>Custom voice profile (training)</Feature>
-              <Feature>Save & re-use brand guidelines</Feature>
-              <Feature>History + favorites</Feature>
-              <Feature>Priority queue</Feature>
+              <Feature>Cross-device sync (voice + history)</Feature>
+              <Feature>
+                <strong className="text-white">Brand kits</strong> — multiple
+                voice profiles for clients
+              </Feature>
+              <Feature>
+                <strong className="text-white">Custom formats</strong> —
+                define your own platform-specific prompts
+              </Feature>
+              <Feature>Bulk mode — multiple sources at once</Feature>
+              <Feature>Priority support</Feature>
             </ul>
             <UpgradeButton enabled={stripeEnabled} />
           </div>
         </div>
+
+        <p className="mx-auto mt-6 max-w-xl text-center text-xs text-neutral-500">
+          Both tiers use your own Anthropic key. Pro doesn&apos;t buy you AI
+          credits — it buys you better tooling around the AI.
+        </p>
       </section>
 
       {/* ─────────────────────────── FAQ ─────────────────────────── */}
@@ -465,8 +564,20 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
         <div className="mt-10 divide-y divide-white/5 rounded-2xl border border-white/10 bg-white/[0.03]">
           {[
             {
+              q: "Why do I need my own Anthropic key?",
+              a: "Because it's the most honest model. You pay Anthropic directly at their wholesale rate (about $0.01 per generation). No markup, no subscription mandatory, no surprise bills. We just provide the prompt engineering — you stay in control of your AI account and your costs.",
+            },
+            {
+              q: "How much will my Anthropic bill be?",
+              a: "Tiny. Each generation costs $0.005–$0.02 depending on source length and how many formats you pick. A typical creator posting 5 sources a week spends $1–$3/month on Anthropic. Anthropic also gives every new account ~$5 of free credit to start.",
+            },
+            {
+              q: "Where is my API key stored?",
+              a: "Only in your browser's localStorage. It's sent with each generation request and used to call Anthropic on your behalf, but we never persist it server-side and never log it. Clearing your browser clears it.",
+            },
+            {
               q: "Does it sound like AI?",
-              a: "We engineer prompts to mirror the source voice and avoid AI tells (em-dashes spam, generic openers, fake stats). The model gets explicit anti-cliché rules. It still helps to read once before posting.",
+              a: "We engineer prompts to mirror the source voice and avoid AI tells (em-dashes spam, generic openers, fake stats). The model gets explicit anti-cliché rules. Voice Profile takes 5 of your old posts and the output starts sounding like you, not a model.",
             },
             {
               q: "What languages are supported?",
@@ -478,7 +589,7 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
             },
             {
               q: "Is my source content stored?",
-              a: "No. The MVP processes your text in-memory and forgets it as soon as the response is sent. We do not train on your input.",
+              a: "No. Your text is processed in-memory and forgotten as soon as the response is sent. We don't train on your input. Voice profile and history live in your browser only.",
             },
           ].map((item) => (
             <details key={item.q} className="group">
