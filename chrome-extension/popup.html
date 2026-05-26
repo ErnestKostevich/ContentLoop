@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ContentLoop</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="hdr">
+      <div class="brand">
+        <div class="mark">
+          <svg viewBox="0 0 64 64" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M 44 18 A 14 14 0 1 0 44 46"
+              fill="none"
+              stroke="#fff"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+            <path
+              d="M 38 12 L 44 18 L 38 24"
+              fill="none"
+              stroke="#fff"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <span class="name">ContentLoop</span>
+      </div>
+      <a id="settings-link" href="#" title="Settings">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
+    </header>
+
+    <!-- No-key state -->
+    <section id="setup-needed" class="panel hidden">
+      <h2>One-time setup</h2>
+      <p>Paste your Anthropic API key. It stays in this browser, never sent to ContentLoop's server (other than as the auth header for Anthropic).</p>
+      <input type="password" id="key-input" placeholder="sk-ant-..." />
+      <button id="save-key" class="primary">Save</button>
+      <a class="link" href="https://console.anthropic.com/settings/keys" target="_blank">Get a key →</a>
+    </section>
+
+    <!-- Ready state -->
+    <section id="ready" class="panel hidden">
+      <div class="page-info">
+        <div class="page-title" id="page-title">Loading…</div>
+        <div class="page-meta" id="page-meta"></div>
+      </div>
+
+      <div class="formats">
+        <strong>Generate:</strong>
+        <div class="format-grid" id="format-grid"></div>
+      </div>
+
+      <button id="generate" class="primary" disabled>Generate</button>
+
+      <div id="result-wrap" class="hidden">
+        <div class="result-head">
+          <span id="result-format">Result</span>
+          <button id="copy" class="tiny">Copy</button>
+        </div>
+        <pre id="result"></pre>
+      </div>
+
+      <div id="error" class="error hidden"></div>
+    </section>
+
+    <footer class="ftr">
+      <a href="https://contentloop-puce.vercel.app" target="_blank">Open full app →</a>
+    </footer>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

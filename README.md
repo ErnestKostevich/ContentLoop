@@ -45,6 +45,11 @@ Why this matters:
 | Custom Formats | ✅ | Up to 12 user-defined formats with full prompt control |
 | Brand Kits | ✅ | Multiple voice profiles per browser (Pro = unlimited) |
 | Export results | ✅ | Download a run as Markdown or JSON |
+| Cross-device sync | 🔌 Scaffolded | Set `DATABASE_URL` (Neon free) to enable |
+| Chrome extension | ✅ | Self-contained in `/chrome-extension`, MV3 |
+| OG image | ✅ | Dynamic 1200×630 PNG via `/opengraph-image` |
+| Sitemap + robots.txt | ✅ | `/sitemap.xml`, `/robots.txt` |
+| Vercel Analytics | ✅ | Auto-enabled when deployed to Vercel |
 | Tip jar | ✅ | Set `NEXT_PUBLIC_TIP_JAR_URL` for footer link |
 | Cross-device sync (Pro) | ⏳ v0.3 | Postgres backed |
 | Brand kits, custom formats (Pro) | ⏳ v0.3 | Multiple voice profiles, user-defined formats |

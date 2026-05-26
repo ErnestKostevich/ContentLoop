@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "ContentLoop — Repurpose this page",
+  "short_name": "ContentLoop",
+  "version": "0.0.1",
+  "description": "One-click: turn the article / post you're reading into a Twitter thread, LinkedIn post, IG caption, newsletter, Shorts script, carousel, or Reddit post. Powered by your own Anthropic key.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ContentLoop — repurpose this page"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["activeTab", "storage", "contextMenus", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

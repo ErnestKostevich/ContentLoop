@@ -4,6 +4,7 @@ import {
   PAID_STATUSES,
   type IpnPayload,
 } from "@/lib/nowpayments";
+import { getDb, schema } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -46,10 +47,36 @@ export async function POST(req: NextRequest) {
     `[nowpayments] order=${payload.order_id} status=${status} ${isPaid ? "(GRANT ACCESS)" : ""}`
   );
 
-  // TODO (v0.5): When DB is wired, on paid → upsert subscription:
-  //   - lookup user by order_id mapping
-  //   - set validUntil = max(now, currentValidUntil) + 30 days
-  //   - notify user (optional)
+  // Persist subscription state when DB is available
+  const db = getDb();
+  if (db && isPaid) {
+    // order_id is of the form `pro-<userId?>-<rand>`; for now the orderId
+    // alone is what we have without auth on the checkout (anon flow).
+    // When Clerk + checkout-with-user lands, we'll embed the user id into
+    // the order_id and parse it here.
+    const validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    try {
+      await db
+        .insert(schema.proSubscriptions)
+        .values({
+          userId: "anonymous", // upgrade once we have auth on checkout
+          id: String(payload.payment_id),
+          provider: "nowpayments",
+          orderId: payload.order_id,
+          status,
+          validUntil,
+        })
+        .onConflictDoUpdate({
+          target: [
+            schema.proSubscriptions.userId,
+            schema.proSubscriptions.id,
+          ],
+          set: { status, validUntil },
+        });
+    } catch (e) {
+      console.error("[nowpayments] failed to persist subscription", e);
+    }
+  }
 
   return NextResponse.json({ received: true });
 }
