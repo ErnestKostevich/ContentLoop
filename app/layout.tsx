@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/components/auth-provider";
+import { ClerkStyleFix } from "@/components/clerk-style-fix";
 import "./globals.css";
 
 const SITE_URL =
@@ -59,6 +60,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-black text-neutral-100 selection:bg-fuchsia-400/30 selection:text-white">
         <AuthProvider>{children}</AuthProvider>
+        <ClerkStyleFix />
         <Analytics />
       </body>
     </html>
