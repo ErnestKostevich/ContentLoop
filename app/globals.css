@@ -125,3 +125,239 @@ body {
   50% { transform: translate(-50%, -5%) scale(1.05); }
 }
 .drift { animation: drift 22s ease-in-out infinite; }
+
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* ────────  CLERK MODAL OVERRIDES  (forced via !important)  ────────── */
+/* ──────────────────────────────────────────────────────────────────── */
+/* Clerk ships its own CSS-in-JS with high specificity; inline-style
+   appearance overrides lost that fight. These global rules with
+   !important guarantee the modal reads correctly and matches the site. */
+
+.cl-modalBackdrop {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Card / outer container */
+.cl-card,
+.cl-cardBox,
+.cl-rootBox .cl-card {
+  background-color: #0a0a0a !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.7) !important;
+  color: #ffffff !important;
+}
+
+/* Header */
+.cl-headerTitle,
+.cl-cardHeaderTitle {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 1.4rem !important;
+  letter-spacing: -0.02em !important;
+}
+
+.cl-headerSubtitle,
+.cl-cardHeaderSubtitle {
+  color: #a3a3a3 !important;
+  font-size: 0.875rem !important;
+}
+
+/* Social buttons (Continue with Google) */
+.cl-socialButtonsBlockButton,
+.cl-socialButtonsIconButton {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 0.75rem !important;
+  color: #ffffff !important;
+  height: 44px !important;
+}
+.cl-socialButtonsBlockButton:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+.cl-socialButtonsBlockButtonText,
+.cl-socialButtonsBlockButtonText__google,
+.cl-socialButtonsProviderIcon + span {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+}
+
+/* "Last used" tag */
+.cl-formButtonReset,
+.cl-internal-b3fm6y,
+.cl-badge {
+  color: #a3a3a3 !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Divider */
+.cl-dividerLine {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+.cl-dividerText {
+  color: #737373 !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: lowercase !important;
+}
+
+/* Input labels */
+.cl-formFieldLabel,
+.cl-formFieldLabelRow,
+.cl-formFieldLabelRow label {
+  color: #d4d4d4 !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+}
+
+/* Inputs */
+.cl-formFieldInput,
+.cl-formFieldInputShowPasswordButton + input,
+.cl-input,
+input.cl-formFieldInput {
+  background-color: #171717 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border-radius: 0.75rem !important;
+  height: 44px !important;
+  font-size: 0.9rem !important;
+}
+.cl-formFieldInput::placeholder {
+  color: #525252 !important;
+}
+.cl-formFieldInput:focus {
+  border-color: rgba(217, 70, 239, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.12) !important;
+  outline: none !important;
+}
+
+/* Primary CTA — white pill (matches site) */
+.cl-formButtonPrimary,
+.cl-button[data-variant="solid"],
+button.cl-formButtonPrimary {
+  background-color: #fafafa !important;
+  background-image: none !important;
+  color: #0a0a0a !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  height: 44px !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  text-transform: none !important;
+  box-shadow: 0 8px 24px -8px rgba(255, 255, 255, 0.2) !important;
+}
+.cl-formButtonPrimary:hover {
+  background-color: #e5e5e5 !important;
+}
+.cl-formButtonPrimary:disabled {
+  background-color: #262626 !important;
+  color: #525252 !important;
+  box-shadow: none !important;
+}
+/* Arrow icon inside the button */
+.cl-formButtonPrimary svg,
+.cl-formButtonPrimary .cl-buttonArrowIcon {
+  color: #0a0a0a !important;
+}
+
+/* Footer */
+.cl-footer,
+.cl-cardFooter,
+.cl-footerActionRow {
+  background-color: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+.cl-footerAction,
+.cl-footerActionText,
+.cl-footerActionRow span {
+  color: #a3a3a3 !important;
+  font-size: 0.85rem !important;
+}
+.cl-footerActionLink,
+.cl-footerActionRow a {
+  color: #f0abfc !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+}
+.cl-footerActionLink:hover {
+  color: #f5d0fe !important;
+}
+
+/* "Secured by Clerk" */
+.cl-footerPages,
+.cl-footerPagesLink,
+.cl-internal-secured,
+.cl-internal-secured-by-clerk {
+  color: #525252 !important;
+  font-size: 0.7rem !important;
+}
+
+/* "Development mode" stripe at the bottom — make it less obnoxious */
+.cl-internal-1cu5cwj,
+.cl-developmentMode,
+[class*="developmentMode"] {
+  background-color: rgba(251, 191, 36, 0.06) !important;
+  color: #fbbf24 !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  border-top: 1px solid rgba(251, 191, 36, 0.15) !important;
+  padding: 0.6rem !important;
+}
+
+/* Identity preview chip */
+.cl-identityPreview,
+.cl-identityPreviewText {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border-radius: 0.75rem !important;
+}
+.cl-identityPreviewEditButton {
+  color: #f0abfc !important;
+}
+
+/* Error / alert text */
+.cl-formFieldErrorText,
+.cl-alertText {
+  color: #fb7185 !important;
+  font-size: 0.8rem !important;
+}
+
+/* UserButton dropdown (header avatar menu) */
+.cl-userButtonPopoverCard {
+  background-color: #0a0a0a !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.7) !important;
+}
+.cl-userPreviewMainIdentifier,
+.cl-userPreviewSecondaryIdentifier {
+  color: #ffffff !important;
+}
+.cl-userButtonPopoverActionButton,
+.cl-userButtonPopoverActionButtonText,
+.cl-userButtonPopoverActionButtonIcon {
+  color: #e5e5e5 !important;
+}
+.cl-userButtonPopoverActionButton:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+.cl-userButtonPopoverFooter {
+  background-color: #0a0a0a !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Generic catch-alls for anything we missed */
+.cl-rootBox * {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif !important;
+}
+.cl-formField label,
+.cl-formField span,
+.cl-card p {
+  color: #d4d4d4;
+}
