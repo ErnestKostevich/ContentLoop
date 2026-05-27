@@ -296,17 +296,47 @@ button.cl-formButtonPrimary {
   font-size: 0.7rem !important;
 }
 
-/* "Development mode" stripe at the bottom — make it less obnoxious */
-.cl-internal-1cu5cwj,
+/* ─── "Development mode" striped banner — flatten the diagonal stripes ─── */
+/* Clerk paints the bottom of dev cards with a repeating-linear-gradient.
+   We nuke any background-image on the bottom-row container and replace
+   with a slim solid bar. Multiple selectors because the class name is
+   hashed and changes per Clerk version. */
+.cl-card > [class*="evelopment"],
+.cl-card > [class*="developmentMode"],
+.cl-card [data-localization-key="developmentMode"],
+.cl-card [data-localization-key*="evelopment"],
+.cl-card > div:last-child:not(.cl-footer):not(.cl-cardFooter):not(.cl-header),
+.cl-card > [class*="cl-internal"]:last-child,
+.cl-cardBox > [class*="cl-internal"]:last-child,
 .cl-developmentMode,
 [class*="developmentMode"] {
-  background-color: rgba(251, 191, 36, 0.06) !important;
+  background: rgba(251, 191, 36, 0.05) !important;
+  background-image: none !important;
+  background-color: rgba(251, 191, 36, 0.05) !important;
   color: #fbbf24 !important;
-  font-size: 0.65rem !important;
-  letter-spacing: 0.06em !important;
+  font-size: 0.6rem !important;
+  letter-spacing: 0.14em !important;
   text-transform: uppercase !important;
-  border-top: 1px solid rgba(251, 191, 36, 0.15) !important;
-  padding: 0.6rem !important;
+  font-weight: 600 !important;
+  border-top: 1px solid rgba(251, 191, 36, 0.18) !important;
+  padding: 0.5rem 0.75rem !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/* And kill any nested gradient inside the dev banner */
+.cl-card > [class*="evelopment"] *,
+.cl-card > [class*="developmentMode"] *,
+.cl-card > [class*="cl-internal"]:last-child *,
+.cl-card [data-localization-key="developmentMode"] *,
+.cl-cardBox > [class*="cl-internal"]:last-child * {
+  background: transparent !important;
+  background-image: none !important;
+  color: #fbbf24 !important;
 }
 
 /* Identity preview chip */
