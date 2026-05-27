@@ -55,7 +55,30 @@ import {
   type CustomFormat,
 } from "@/lib/storage";
 import { estimateCostUsd, formatUsd } from "@/lib/pricing";
-import { extendPro } from "@/lib/pro";
+import { extendPro, setProValidUntil } from "@/lib/pro";
+
+const justUpgraded = (): boolean => {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("upgraded") === "1";
+};
+
+async function syncProFromServer(): Promise<string | null> {
+  try {
+    const r = await fetch("/api/me");
+    if (!r.ok) return null;
+    const data = (await r.json()) as {
+      signedIn?: boolean;
+      proValidUntil?: string | null;
+    };
+    if (data.signedIn && data.proValidUntil) {
+      setProValidUntil(data.proValidUntil);
+      return data.proValidUntil;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 import { OnboardingModal } from "@/components/onboarding-modal";
 import { ExportResults } from "@/components/export-results";
 
@@ -189,6 +212,24 @@ export function Workspace() {
         }
       })
       .catch(() => setServerHasKey(false));
+
+    // Server-side Pro recovery: if user is signed in (Clerk), trust the DB
+    // over localStorage. Survives browser clears + new devices.
+    syncProFromServer();
+
+    // After ?upgraded=1, the webhook may take a few seconds to land — poll
+    // /api/me up to 6 times (~12s) so the UI flips to Pro without a reload.
+    if (justUpgraded()) {
+      let attempts = 0;
+      const tick = () => {
+        attempts += 1;
+        syncProFromServer().then((until) => {
+          if (until || attempts >= 6) return;
+          setTimeout(tick, 2000);
+        });
+      };
+      setTimeout(tick, 2000);
+    }
   }, []);
 
   const charCount = source.length;

@@ -59,6 +59,19 @@ export function extendPro(days: number): Date {
   return next;
 }
 
+/**
+ * Set the validity window directly from a server-provided ISO string.
+ * Used to recover Pro from the DB when a signed-in user returns from
+ * a cleared browser / new device.
+ */
+export function setProValidUntil(isoDate: string): void {
+  const ls = safeWindow();
+  if (!ls) return;
+  const d = new Date(isoDate);
+  if (isNaN(d.getTime())) return;
+  ls.setItem(KEY_VALID_UNTIL, d.toISOString());
+}
+
 /** Legacy alias kept so existing call sites keep compiling. */
 export function setProUnlocked(value: boolean): void {
   const ls = safeWindow();

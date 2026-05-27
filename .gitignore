@@ -44,4 +44,7 @@ next-env.d.ts
 .commitmsg.tmp
 *.tmp
 
+# claude code internal
+.claude/
+
 .vercel
