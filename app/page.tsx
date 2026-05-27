@@ -1,19 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  Sparkles,
-  Zap,
-  Globe2,
-  Wand2,
-  ClipboardCopy,
-  Repeat,
-  Star,
-  KeyRound,
-  ShieldCheck,
-  Coins,
-  X as XIcon,
-} from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { UpgradeButton } from "@/components/upgrade-button";
@@ -24,217 +10,145 @@ import { hasServerKey } from "@/lib/anthropic";
 export default function LandingPage() {
   const paymentsProvider = activeProviderServer();
   const paymentsEnabled = paymentsProvider !== null;
-  const stripeEnabled = paymentsEnabled; // backward-compat alias for existing markup
   const serverKey = hasServerKey();
+
   return (
     <>
+      <div className="grain" aria-hidden />
       <SiteHeader />
 
       {/* ─────────────────────────── HERO ─────────────────────────── */}
       <section className="relative isolate overflow-hidden">
-        <div className="aurora" aria-hidden />
-        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-28">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-300 backdrop-blur">
+        <div className="spotlight drift" aria-hidden />
+        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-28 pt-24 sm:px-6 sm:pt-32 lg:pt-40">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
-              Live — powered by Claude Sonnet 4.5
+              v0.0.1 · powered by Claude Sonnet 4.5
             </div>
 
-            <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-              Turn <span className="text-gradient">one post</span> into ten.
+            <h1 className="mt-8 text-balance text-5xl font-medium leading-[0.95] tracking-extra-tight text-white sm:text-7xl lg:text-[110px]">
+              one post becomes{" "}
+              <span className="font-display-italic text-gradient">ten.</span>
             </h1>
 
-            <p className="mx-auto mt-5 max-w-2xl text-pretty text-base text-neutral-400 sm:text-lg">
-              Paste an article, podcast transcript, or YouTube script.
-              ContentLoop gives you 7 platform-native posts — thread, LinkedIn,
-              IG, newsletter, Shorts, carousel, Reddit — in one click, in
-              your voice.
+            <p className="mx-auto mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-neutral-400 sm:text-xl">
+              Paste a blog post, podcast transcript, or YouTube script.
+              Get seven platform-native posts — a thread, a LinkedIn, an IG
+              caption, a newsletter, three Shorts scripts, a carousel,
+              a Reddit post — written{" "}
+              <span className="font-display-italic text-white">in your voice</span>.
+              You bring your own AI key. We don&apos;t take a cut.
             </p>
 
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/app"
-                className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-neutral-950 shadow-lg shadow-black/30 transition hover:bg-neutral-200"
+                className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-semibold text-black shadow-2xl shadow-fuchsia-500/10 transition hover:bg-neutral-200"
               >
-                {serverKey
-                  ? "Try it free — 3 generations/day"
-                  : "Open the app — bring your own key"}
-                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                {serverKey ? "Try it free →" : "Open the app →"}
               </Link>
               <Link
                 href="#how"
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 text-sm font-medium text-neutral-200 backdrop-blur transition hover:bg-white/10"
+                className="inline-flex h-12 items-center justify-center rounded-full px-5 text-sm text-neutral-400 transition hover:text-white"
               >
                 See how it works
               </Link>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-neutral-500">
-              <span className="inline-flex items-center gap-1.5">
-                <Check className="h-3 w-3 text-emerald-400" />
-                No signup
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Check className="h-3 w-3 text-emerald-400" />
-                No credit card to us
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Check className="h-3 w-3 text-emerald-400" />
-                You own your AI account & costs
-              </span>
-            </div>
-          </div>
-
-          {/* Format chips preview */}
-          <div className="mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-5">
-            {FORMATS.map((f) => (
-              <div
-                key={f.id}
-                className="lift rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center"
-              >
-                <div
-                  className={`mx-auto mb-2 h-8 w-8 rounded-lg bg-gradient-to-br ${f.color} opacity-90`}
-                />
-                <div className="text-xs font-medium text-neutral-200">
-                  {f.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────────────── HOW IT WORKS ─────────────────────────── */}
-      <section id="how" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <h2 className="text-center text-3xl font-semibold tracking-tight sm:text-4xl">
-          From long-form to launch in under a minute.
-        </h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-neutral-400">
-          One source. Five platforms. Zero copywriter calls.
-        </p>
-
-        <div className="mt-12 grid gap-4 sm:grid-cols-3">
-          {[
-            {
-              n: "01",
-              icon: ClipboardCopy,
-              title: "Paste your source",
-              body: "An article, a transcript, an essay — anything 200+ words. Drop it in the editor.",
-            },
-            {
-              n: "02",
-              icon: Wand2,
-              title: "Pick your formats",
-              body: "Tap which channels you want. Thread, LinkedIn, IG, newsletter, Shorts — mix freely.",
-            },
-            {
-              n: "03",
-              icon: Repeat,
-              title: "Ship in your voice",
-              body: "ContentLoop matches the original tone, then sharpens hooks. Copy, post, done.",
-            },
-          ].map((step) => (
-            <div
-              key={step.n}
-              className="lift rounded-2xl border border-white/10 bg-white/[0.03] p-6"
-            >
-              <div className="flex items-center gap-3">
-                <span className="rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 p-2 text-white">
-                  <step.icon className="h-4 w-4" />
-                </span>
-                <span className="font-mono text-xs text-neutral-500">
-                  {step.n}
-                </span>
-              </div>
-              <h3 className="mt-4 text-lg font-medium text-neutral-100">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-sm text-neutral-400">{step.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─────────────────────────── FEATURES ─────────────────────────── */}
-      <section
-        id="features"
-        className="mx-auto max-w-6xl px-4 py-20 sm:px-6"
-      >
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Not a wrapper. <br />
-              <span className="text-gradient">A studio.</span>
-            </h2>
-            <p className="mt-4 max-w-md text-neutral-400">
-              Most AI &ldquo;repurposers&rdquo; spit out generic slop. ContentLoop is
-              prompt-engineered per platform — hooks, structure, length,
-              tone — by people who actually post.
+            <p className="mt-5 text-xs text-neutral-500">
+              No signup to try. No credit card. Bring your own Anthropic key
+              (~$0.01 per run).
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {[
-              {
-                icon: Sparkles,
-                title: "Platform-native, not copy-paste",
-                body: "Different lengths, different hooks, different structure per channel.",
-              },
-              {
-                icon: Zap,
-                title: "Parallel generation",
-                body: "All five formats render at once. Average run: 8 seconds.",
-              },
-              {
-                icon: Globe2,
-                title: "Any language",
-                body: "Outputs in the source language — Russian in, Russian out.",
-              },
-              {
-                icon: Wand2,
-                title: "Voice-matching",
-                body: "We mirror tone instead of forcing a generic AI voice.",
-              },
-            ].map((f) => (
-              <div
-                key={f.title}
-                className="lift rounded-2xl border border-white/10 bg-white/[0.03] p-5"
-              >
-                <span className="inline-flex rounded-lg bg-white/5 p-2 text-neutral-100">
-                  <f.icon className="h-4 w-4" />
-                </span>
-                <h3 className="mt-4 text-sm font-semibold text-neutral-100">
-                  {f.title}
-                </h3>
-                <p className="mt-1 text-sm text-neutral-400">{f.body}</p>
-              </div>
+          {/* Format chips — minimal, no surrounding boxes */}
+          <div className="mx-auto mt-20 flex max-w-4xl flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
+            {FORMATS.map((f, i) => (
+              <span key={f.id} className="flex items-center gap-3">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full bg-gradient-to-br ${f.color}`}
+                />
+                <span className="font-medium text-neutral-300">{f.label}</span>
+                {i < FORMATS.length - 1 && (
+                  <span className="text-neutral-700">/</span>
+                )}
+              </span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────────── SAMPLE OUTPUT ─────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-300">
-            What you actually get
+      {/* ─────────────────────────── HOW IT WORKS (3 lines, no fluff) ─────────────────────────── */}
+      <section
+        id="how"
+        className="relative z-10 border-t border-white/5 bg-black"
+      >
+        <div className="mx-auto max-w-5xl px-4 py-24 sm:px-6">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-fuchsia-300">
+            how it works
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-            One source → five real posts.
+          <h2 className="mt-3 max-w-3xl text-balance font-display text-4xl leading-[1.05] tracking-tight text-white sm:text-6xl">
+            Three steps. Under a minute.{" "}
+            <span className="font-display-italic text-neutral-500">
+              No copywriter calls.
+            </span>
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-neutral-400">
-            Below: actual output from a single article about &ldquo;distribution
-            beats product.&rdquo; No edits.
-          </p>
+
+          <ol className="mt-16 grid gap-10 sm:grid-cols-3">
+            <Step
+              n="01"
+              title="Paste your source."
+              body="An article, a transcript, a long essay. Anything past 200 words. Or paste a URL — we&rsquo;ll fetch the body."
+            />
+            <Step
+              n="02"
+              title="Pick your formats."
+              body="Tap seven, tap one. Each runs in parallel. Define your own format if the built-ins don&rsquo;t fit."
+            />
+            <Step
+              n="03"
+              title="Ship in your voice."
+              body="Train a voice profile with 5 past posts and the output stops sounding like a model — it sounds like you."
+            />
+          </ol>
         </div>
+      </section>
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-2">
-          <SamplePost
-            tag="X / Twitter thread"
-            color="from-sky-400 to-blue-600"
-            body={`1/ I built a great product for two years and made roughly $0.
+      {/* ─────────────────────────── SAMPLE STRIP (one big preview) ─────────────────────────── */}
+      <section className="relative z-10 border-t border-white/5 bg-black">
+        <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-fuchsia-300">
+                what you actually get
+              </p>
+              <h2 className="mt-3 font-display text-4xl leading-[1.05] tracking-tight text-white sm:text-5xl">
+                Output that doesn&rsquo;t sound{" "}
+                <span className="font-display-italic">like AI.</span>
+              </h2>
+              <p className="mt-5 max-w-md text-neutral-400">
+                Per-platform prompt engineering kills the AI tells. Voice
+                profile training takes care of the rest. Below: an actual
+                Twitter thread from a single short article. Unedited.
+              </p>
+            </div>
 
-The fix wasn't a better product. It was 90 days of one short post per day on the platform my buyers actually use.
+            <article className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent p-6 sm:p-8">
+              <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-gradient-to-br from-sky-500/20 to-blue-600/0 blur-2xl" />
+              <div className="relative">
+                <div className="mb-4 flex items-center gap-2 text-xs text-neutral-500">
+                  <span className="inline-flex h-1.5 w-1.5 rounded-full bg-sky-400" />
+                  X / Twitter thread
+                  <span className="text-neutral-700">·</span>
+                  <span className="font-mono text-[10px] text-neutral-600">
+                    generated · unedited
+                  </span>
+                </div>
+                <pre className="whitespace-pre-wrap font-sans text-[15px] leading-[1.55] text-neutral-100">
+{`1/ I built a great product for two years and made roughly $0.
+
+The fix wasn&apos;t a better product. It was 90 days of one short post per day, on the platform my buyers actually used.
 
 By day 60, three companies had emailed me.
 By day 90, I quit my job.
@@ -242,391 +156,220 @@ By day 90, I quit my job.
 2/ Distribution is the moat.
 
 In a market where anyone can build, the audience you patiently earn before you need them is the only durable advantage.`}
-          />
-          <SamplePost
-            tag="LinkedIn post"
-            color="from-blue-500 to-indigo-700"
-            body={`Two years of shipping. Beautiful product. $0 in revenue.
-
-Then I committed to one short technical post per day for 90 days. Not threads. Not "ultimate guides." Specific, useful observations on the one platform my buyers actually used.
-
-Day 60: three companies emailed me asking for a contract.
-Day 90: enough revenue to quit my job.
-
-The product hadn't changed. The distribution had.
-
-The lesson I wish I'd learned five years sooner: in a market where everyone can build, the moat is the audience you earn before you need them.
-
-What's the longest you've gone shipping without distribution?`}
-          />
-          <SamplePost
-            tag="Instagram caption"
-            color="from-pink-500 via-fuchsia-500 to-orange-400"
-            body={`2 years shipping. $0 in revenue. Then 90 days of one post a day changed everything 📈
-
-I had the developer tool dialed. Nice docs. DMs from strangers. Roughly zero dollars.
-
-What moved the needle wasn't a better product. It was committing — for 90 straight days — to one short, specific post per day on the platform where my buyers actually hung out.
-
-Day 60: three companies emailed me asking for a contract.
-Day 90: enough revenue to quit my job.
-
-The product hadn't changed. The distribution had.
-
-Save this if you've been shipping in silence. 🔁`}
-          />
-          <SamplePost
-            tag="Reels / Shorts script"
-            color="from-rose-500 to-red-600"
-            body={`SCRIPT 1: Why your great product makes $0
-HOOK (0–3s): "I shipped a great product for two years and made nothing — here's why."
-BEAT 1 (3–15s): For 2 years I had real users, real DMs, real love. And almost no revenue.
-BEAT 2 (15–35s): Then I committed to 1 short post a day, 90 days, on the platform my buyers actually used.
-BEAT 3 (35–55s): Day 60 — three companies emailed me. Day 90 — I quit my job.
-CTA (55–60s): The product hadn't changed. The distribution had. Follow for more.
-ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day 90: revenue."`}
-          />
-        </div>
-      </section>
-
-      {/* ─────────────────────────── COMPARISON ─────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
-        <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            How ContentLoop is different.
-          </h2>
-          <p className="mt-3 text-neutral-400">
-            Most repurposers are content-shaped Mad Libs. We shipped opinions.
-          </p>
-        </div>
-
-        <div className="mt-10 overflow-x-auto rounded-2xl border border-white/10">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-white/[0.03] text-neutral-400">
-              <tr>
-                <th className="px-5 py-3 font-medium"></th>
-                <th className="px-5 py-3 font-semibold text-white">
-                  ContentLoop
-                </th>
-                <th className="px-5 py-3 font-medium">
-                  Generic AI rewriter
-                </th>
-                <th className="px-5 py-3 font-medium">Hiring a freelancer</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {[
-                {
-                  label: "Per-platform prompt engineering",
-                  a: true,
-                  b: false,
-                  c: true,
-                },
-                {
-                  label: "Matches your voice (samples-based)",
-                  a: true,
-                  b: false,
-                  c: true,
-                },
-                {
-                  label: "Output in under 30 seconds",
-                  a: true,
-                  b: true,
-                  c: false,
-                },
-                {
-                  label: "Cost per piece of content",
-                  a: "$0–$1",
-                  b: "$0.10",
-                  c: "$50–$200",
-                },
-                {
-                  label: "Works on weekends at 2am",
-                  a: true,
-                  b: true,
-                  c: false,
-                },
-                {
-                  label: "Free tier",
-                  a: true,
-                  b: false,
-                  c: false,
-                },
-              ].map((row) => (
-                <tr key={row.label}>
-                  <td className="px-5 py-3 text-neutral-300">{row.label}</td>
-                  <ComparisonCell value={row.a} highlight />
-                  <ComparisonCell value={row.b} />
-                  <ComparisonCell value={row.c} />
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* ─────────────────────────── TESTIMONIALS ─────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Loved by people who post for a living.
-          </h2>
-        </div>
-
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            {
-              quote:
-                "I used to spend Sundays carving up my newsletter for 4 different channels. ContentLoop does it in under a minute and the LinkedIn output is sharper than what I write tired.",
-              name: "Mira K.",
-              role: "Indie newsletter operator · 22k subs",
-            },
-            {
-              quote:
-                "The voice profile is the bit that broke me. I uploaded 5 of my old posts and the threads now sound like me on a good day. I cannot go back to plain GPT for this.",
-              name: "Daniel R.",
-              role: "Solo founder · DevTools",
-            },
-            {
-              quote:
-                "My podcast → 3 platforms in 8 seconds. We used to pay an editor $400/mo to do this manually. Now we just QA-pass the output.",
-              name: "Aiko T.",
-              role: "Podcast producer · Tokyo",
-            },
-          ].map((t) => (
-            <figure
-              key={t.name}
-              className="lift rounded-2xl border border-white/10 bg-white/[0.03] p-6"
-            >
-              <div className="flex items-center gap-1 text-amber-300">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-current" />
-                ))}
+                </pre>
               </div>
-              <blockquote className="mt-4 text-sm leading-relaxed text-neutral-200">
-                &ldquo;{t.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-5 text-xs">
-                <div className="font-semibold text-neutral-100">{t.name}</div>
-                <div className="text-neutral-500">{t.role}</div>
-              </figcaption>
-            </figure>
-          ))}
+            </article>
+          </div>
         </div>
-
-        <p className="mt-8 text-center text-xs text-neutral-600">
-          Quotes from early-access testers. Public launch in progress.
-        </p>
       </section>
 
-      {/* ─────────────────────────── HOW COSTS WORK (BYOK) ─────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
-        <div className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-300">
-            Bring your own key
+      {/* ─────────────────────────── COST MATH (stat-driven) ─────────────────────────── */}
+      <section className="relative z-10 border-t border-white/5 bg-black">
+        <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-fuchsia-300">
+            the cost math
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-            You pay Anthropic. Never us.
+          <h2 className="mt-3 max-w-3xl text-balance font-display text-4xl leading-[1.05] tracking-tight text-white sm:text-6xl">
+            You pay Anthropic.{" "}
+            <span className="font-display-italic">Never us.</span>
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-neutral-400">
-            ContentLoop runs on your own Anthropic API key. No markup, no
-            subscription required, no surprise bills. We just give you the
-            prompt engineering.
-          </p>
-        </div>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {[
-            {
-              icon: KeyRound,
-              title: "1. Free Anthropic account",
-              body: "Anthropic gives every new user ~$5 of free credit. Enough for hundreds of generations on ContentLoop.",
-            },
-            {
-              icon: Coins,
-              title: "2. Pay-as-you-go pricing",
-              body: "Typical generation: $0.005–$0.02 of your Anthropic credit. That's 50–200 full posts for $1.",
-            },
-            {
-              icon: ShieldCheck,
-              title: "3. Full transparency",
-              body: "Every run shows the actual token usage + USD cost. Your key lives in your browser only.",
-            },
-          ].map((s) => (
-            <div
-              key={s.title}
-              className="lift rounded-2xl border border-white/10 bg-white/[0.03] p-5"
-            >
-              <span className="inline-flex rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 p-2 text-white">
-                <s.icon className="h-4 w-4" />
-              </span>
-              <h3 className="mt-4 text-sm font-semibold text-neutral-100">
-                {s.title}
-              </h3>
-              <p className="mt-1 text-sm text-neutral-400">{s.body}</p>
-            </div>
-          ))}
-        </div>
+          <div className="mt-16 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/5 sm:grid-cols-3">
+            <Stat
+              big="$0"
+              label="What ContentLoop charges per run"
+              sub="No markup, no subscription required, no surprise bill."
+            />
+            <Stat
+              big="$0.01"
+              label="Typical Anthropic cost per run"
+              sub="Sonnet 4.5 pricing. Anthropic gives every new account ~$5 free."
+            />
+            <Stat
+              big="7"
+              label="Platform-native posts per run"
+              sub="Thread, LinkedIn, IG, newsletter, Shorts, carousel, Reddit."
+            />
+          </div>
 
-        <div className="mt-8 rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.04] p-5 text-sm text-emerald-100">
-          <p>
-            <strong className="font-semibold">Real cost math:</strong>{" "}
-            One source (~2,000 words) → 5 formats generated = roughly
-            10,000 input + 4,000 output tokens =&nbsp;
-            <strong className="text-emerald-50">$0.09 per full run</strong>{" "}
-            (Sonnet 4.5 pricing). A heavy user posting 10 sources a month
-            spends about <strong>$0.90/month</strong> on Anthropic — paid
-            directly to them, not to us.
+          <p className="mx-auto mt-10 max-w-2xl text-pretty text-center text-neutral-400">
+            Heavy creator posting 10 sources a month spends about{" "}
+            <span className="font-display-italic text-white">$0.90 / month</span>{" "}
+            on Anthropic. Paid directly to them, not to us. Pro plan
+            (sync + brand kits + custom formats) is{" "}
+            <span className="font-display-italic text-white">$9 / 30 days</span>,
+            payable in any crypto via NOWPayments.
           </p>
         </div>
       </section>
 
       {/* ─────────────────────────── PRICING ─────────────────────────── */}
-      <section id="pricing" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Honest pricing.
-          </h2>
-          <p className="mt-3 text-neutral-400">
-            The tool is free forever. Pro adds premium features for teams
-            and power users.
-          </p>
-        </div>
-
-        <div className="mx-auto mt-12 grid max-w-3xl gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <div className="flex items-baseline justify-between">
-              <h3 className="text-lg font-semibold">Free</h3>
-              <span className="text-2xl font-semibold">$0</span>
-            </div>
-            <p className="mt-1 text-sm text-neutral-400">
-              Forever. Just bring your own Anthropic key.
+      <section
+        id="pricing"
+        className="relative z-10 border-t border-white/5 bg-black"
+      >
+        <div className="mx-auto max-w-5xl px-4 py-24 sm:px-6">
+          <div className="text-center">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-fuchsia-300">
+              pricing
             </p>
-            <ul className="mt-5 space-y-2 text-sm text-neutral-300">
-              <Feature>
-                <strong className="text-white">Unlimited</strong> generations
-                (pay Anthropic ~$0.01/run)
-              </Feature>
-              <Feature>All 7 output formats</Feature>
-              <Feature>Voice profile training</Feature>
-              <Feature>URL import + history</Feature>
-              <Feature>Source up to 30,000 chars</Feature>
-              <Feature>Powered by Claude Sonnet 4.5</Feature>
-            </ul>
-            <Link
-              href="/app"
-              className="mt-7 inline-flex h-10 w-full items-center justify-center rounded-lg border border-white/10 bg-white/5 text-sm font-medium text-neutral-100 hover:bg-white/10 transition"
-            >
-              Start free
-            </Link>
+            <h2 className="mt-3 font-display text-5xl leading-[1.05] tracking-tight text-white sm:text-7xl">
+              honest by design.
+            </h2>
+            <p className="mt-4 text-neutral-400">
+              The tool is free forever. Pro adds premium tooling{" "}
+              <span className="font-display-italic">around</span> the AI —
+              not access to it.
+            </p>
           </div>
 
-          <div className="relative rounded-2xl border border-fuchsia-500/30 bg-gradient-to-b from-fuchsia-500/[0.07] to-transparent p-6 shadow-[0_0_60px_-30px_rgba(217,70,239,0.6)]">
-            <span className="absolute right-5 top-5 rounded-full border border-fuchsia-400/30 bg-fuchsia-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300">
-              {paymentsEnabled ? "Most popular" : "Soon"}
-            </span>
-            <div className="flex items-baseline justify-between">
-              <h3 className="text-lg font-semibold">Pro</h3>
-              <div>
-                <span className="text-2xl font-semibold">$9</span>
-                <span className="ml-1 text-sm text-neutral-400">/30 days</span>
+          <div className="mx-auto mt-16 grid max-w-3xl gap-5 sm:grid-cols-2">
+            {/* FREE */}
+            <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-7">
+              <div className="flex items-baseline justify-between">
+                <h3 className="text-lg font-medium text-white">Free</h3>
+                <span className="font-display text-3xl text-white">$0</span>
+              </div>
+              <p className="mt-1 text-sm text-neutral-500">
+                Forever. Bring your own Anthropic key.
+              </p>
+              <ul className="mt-7 space-y-2.5 text-sm text-neutral-300">
+                <Feature>
+                  <strong className="text-white">Unlimited</strong> generations
+                </Feature>
+                <Feature>All 7 output formats</Feature>
+                <Feature>Voice profile training</Feature>
+                <Feature>URL import + history</Feature>
+                <Feature>Chrome extension</Feature>
+                <Feature>30,000 char source</Feature>
+              </ul>
+              <Link
+                href="/app"
+                className="mt-8 inline-flex h-11 w-full items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-medium text-white hover:bg-white/[0.08] transition"
+              >
+                Start free
+              </Link>
+            </div>
+
+            {/* PRO */}
+            <div className="relative overflow-hidden rounded-3xl border border-fuchsia-400/20 bg-gradient-to-b from-fuchsia-500/[0.07] to-transparent p-7 shadow-[0_0_80px_-30px_rgba(217,70,239,0.6)]">
+              <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-gradient-to-br from-fuchsia-500/30 to-orange-500/0 blur-3xl" />
+              <span className="absolute right-6 top-6 rounded-full border border-fuchsia-400/30 bg-fuchsia-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-fuchsia-200">
+                {paymentsEnabled ? "Most popular" : "Soon"}
+              </span>
+              <div className="relative">
+                <h3 className="text-lg font-medium text-white">Pro</h3>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="font-display text-3xl text-white">$9</span>
+                  <span className="text-sm text-neutral-400">/ 30 days</span>
+                </div>
+                <p className="mt-1 text-sm text-neutral-500">
+                  {paymentsProvider === "nowpayments"
+                    ? "Pay in BTC, ETH, USDT, or 200+ other crypto."
+                    : "Premium tooling. Still BYOK for AI."}
+                </p>
+                <ul className="mt-7 space-y-2.5 text-sm text-neutral-300">
+                  <Feature>
+                    <strong className="text-white">Brand kits</strong> —
+                    unlimited voice profiles
+                  </Feature>
+                  <Feature>
+                    <strong className="text-white">Custom formats</strong> —
+                    up to 12 of your own
+                  </Feature>
+                  <Feature>
+                    <strong className="text-white">Cross-device sync</strong> —
+                    sign in, restore anywhere
+                  </Feature>
+                  <Feature>Export Markdown / JSON</Feature>
+                  <Feature>Priority support</Feature>
+                </ul>
+                <UpgradeButton enabled={paymentsEnabled} />
               </div>
             </div>
-            <p className="mt-1 text-sm text-neutral-400">
-              {paymentsProvider === "nowpayments"
-                ? "Pay in any crypto — BTC, ETH, USDT, and 200+ more."
-                : "Premium features. Still BYOK for AI."}
-            </p>
-            <ul className="mt-5 space-y-2 text-sm text-neutral-300">
-              <Feature>
-                <strong className="text-white">Brand kits</strong> — unlimited
-                voice profiles for clients
-              </Feature>
-              <Feature>
-                <strong className="text-white">Custom formats</strong> — up to
-                12 user-defined output formats
-              </Feature>
-              <Feature>
-                <strong className="text-white">Export</strong> as Markdown / JSON
-              </Feature>
-              <Feature>Cross-device sync (soon)</Feature>
-              <Feature>Bulk mode — multiple sources at once (soon)</Feature>
-              <Feature>Priority support</Feature>
-            </ul>
-            <UpgradeButton enabled={paymentsEnabled} />
           </div>
-        </div>
 
-        <p className="mx-auto mt-6 max-w-xl text-center text-xs text-neutral-500">
-          Both tiers use your own Anthropic key. Pro doesn&apos;t buy you AI
-          credits — it buys you better tooling around the AI.
-        </p>
+          <p className="mx-auto mt-8 max-w-xl text-center text-xs text-neutral-500">
+            Both tiers use your own Anthropic key. Pro doesn&apos;t buy you AI
+            credits — it buys you better tooling around it.
+          </p>
+        </div>
       </section>
 
       {/* ─────────────────────────── FAQ ─────────────────────────── */}
-      <section id="faq" className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-        <h2 className="text-center text-3xl font-semibold tracking-tight">
-          Questions, answered.
-        </h2>
-        <div className="mt-10 divide-y divide-white/5 rounded-2xl border border-white/10 bg-white/[0.03]">
-          {[
-            {
-              q: "Why do I need my own Anthropic key?",
-              a: "Because it's the most honest model. You pay Anthropic directly at their wholesale rate (about $0.01 per generation). No markup, no subscription mandatory, no surprise bills. We just provide the prompt engineering — you stay in control of your AI account and your costs.",
-            },
-            {
-              q: "How much will my Anthropic bill be?",
-              a: "Tiny. Each generation costs $0.005–$0.02 depending on source length and how many formats you pick. A typical creator posting 5 sources a week spends $1–$3/month on Anthropic. Anthropic also gives every new account ~$5 of free credit to start.",
-            },
-            {
-              q: "Where is my API key stored?",
-              a: "Only in your browser's localStorage. It's sent with each generation request and used to call Anthropic on your behalf, but we never persist it server-side and never log it. Clearing your browser clears it.",
-            },
-            {
-              q: "Does it sound like AI?",
-              a: "We engineer prompts to mirror the source voice and avoid AI tells (em-dashes spam, generic openers, fake stats). The model gets explicit anti-cliché rules. Voice Profile takes 5 of your old posts and the output starts sounding like you, not a model.",
-            },
-            {
-              q: "What languages are supported?",
-              a: "Any language Claude speaks well — English, Russian, Spanish, German, French, Portuguese, Polish, Ukrainian, Japanese, and more. Output language matches the source.",
-            },
-            {
-              q: "Will I get banned for AI content?",
-              a: "No platform bans AI-assisted content as long as it's useful and honest. We never auto-publish — you ship every post yourself.",
-            },
-            {
-              q: "Is my source content stored?",
-              a: "No. Your text is processed in-memory and forgotten as soon as the response is sent. We don't train on your input. Voice profile and history live in your browser only.",
-            },
-          ].map((item) => (
-            <details key={item.q} className="group">
-              <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-medium text-neutral-100">
-                {item.q}
-                <span className="ml-4 text-neutral-500 transition group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <div className="px-5 pb-5 text-sm text-neutral-400">
-                {item.a}
-              </div>
-            </details>
-          ))}
+      <section
+        id="faq"
+        className="relative z-10 border-t border-white/5 bg-black"
+      >
+        <div className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-fuchsia-300">
+            faq
+          </p>
+          <h2 className="mt-3 font-display text-4xl leading-[1.05] tracking-tight text-white sm:text-5xl">
+            Questions, answered.
+          </h2>
+
+          <div className="mt-12 divide-y divide-white/5 border-y border-white/5">
+            {[
+              {
+                q: "Why do I need my own Anthropic key?",
+                a: "Because it's the most honest model. You pay Anthropic directly at wholesale (about $0.01 per generation). No markup, no mandatory subscription, no surprise bills. We just provide the prompt engineering.",
+              },
+              {
+                q: "How much will my Anthropic bill be?",
+                a: "Tiny. $0.005–$0.02 per run. A creator posting five sources a week spends $1–$3/month on Anthropic. New accounts get ~$5 of free credit to start.",
+              },
+              {
+                q: "Where is my API key stored?",
+                a: "Only in your browser. It's sent with each generation request and used to call Anthropic on your behalf. We never persist it server-side and never log it. Clearing your browser clears it.",
+              },
+              {
+                q: "Does it sound like AI?",
+                a: "We engineer prompts to mirror the source voice and ban the obvious AI tells (em-dash spam, generic openers, fake stats). Voice Profile takes 5 of your old posts and the output starts sounding like you, not a model.",
+              },
+              {
+                q: "What languages are supported?",
+                a: "Any language Claude speaks well — English, Russian, Spanish, German, French, Portuguese, Polish, Ukrainian, Japanese, and more. Output language matches the source.",
+              },
+              {
+                q: "What if I clear my browser after upgrading to Pro?",
+                a: "Pro is tied to your signed-in account, persisted in the database. Sign in on any device, your Pro window restores automatically.",
+              },
+              {
+                q: "Is my source content stored?",
+                a: "No. It&apos;s processed in-memory and forgotten as soon as the response is sent. We don&apos;t train on your input. Voice profile and history live in your browser (or your account when signed in).",
+              },
+            ].map((item) => (
+              <details key={item.q} className="group">
+                <summary className="flex cursor-pointer items-center justify-between px-2 py-5 text-base font-medium text-neutral-100">
+                  {item.q}
+                  <span className="ml-4 font-display text-2xl text-neutral-600 transition group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <div className="px-2 pb-6 text-neutral-400">{item.a}</div>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ─────────────────────────── FINAL CTA ─────────────────────────── */}
-      <section className="relative isolate overflow-hidden border-t border-white/5">
-        <div className="aurora opacity-50" aria-hidden />
-        <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Stop rewriting. Start <span className="text-gradient">looping</span>.
+      <section className="relative z-10 overflow-hidden border-t border-white/5 bg-black">
+        <div className="spotlight" aria-hidden />
+        <div className="relative z-10 mx-auto max-w-4xl px-4 py-32 text-center sm:px-6">
+          <h2 className="font-display text-5xl leading-[0.95] tracking-extra-tight text-white sm:text-7xl lg:text-8xl">
+            Stop rewriting.{" "}
+            <span className="font-display-italic text-gradient">
+              Start looping.
+            </span>
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-neutral-400">
-            One source, five platforms, your voice. Free to try right now.
+          <p className="mx-auto mt-7 max-w-xl text-neutral-400">
+            One source, seven posts, your voice. Free to try right now.
           </p>
           <Link
             href="/app"
-            className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-7 text-sm font-semibold text-neutral-950 shadow-lg shadow-black/30 transition hover:bg-neutral-200"
+            className="mt-10 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-semibold text-black shadow-2xl shadow-fuchsia-500/10 transition hover:bg-neutral-200"
           >
             Open the app
             <ArrowRight className="h-4 w-4" />
@@ -639,67 +382,53 @@ ON-SCREEN: "2 yrs shipping. $0." | "90 days. 1 post/day." | "Day 60: emails. Day
   );
 }
 
-function Feature({ children }: { children: React.ReactNode }) {
+/* ─────────────────────────── helpers ─────────────────────────── */
+
+function Step({
+  n,
+  title,
+  body,
+}: {
+  n: string;
+  title: string;
+  body: React.ReactNode;
+}) {
   return (
-    <li className="flex items-start gap-2">
-      <Check className="mt-0.5 h-4 w-4 flex-none text-emerald-400" />
-      <span>{children}</span>
+    <li className="flex flex-col gap-4">
+      <span className="font-mono text-xs text-neutral-600">{n}</span>
+      <h3 className="font-display text-2xl leading-snug tracking-tight text-white">
+        {title}
+      </h3>
+      <p className="text-neutral-400">{body}</p>
     </li>
   );
 }
 
-function SamplePost({
-  tag,
-  color,
-  body,
+function Stat({
+  big,
+  label,
+  sub,
 }: {
-  tag: string;
-  color: string;
-  body: string;
+  big: string;
+  label: string;
+  sub: string;
 }) {
   return (
-    <article className="lift overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
-      <div className="flex items-center justify-between border-b border-white/5 px-5 py-3">
-        <span className="inline-flex items-center gap-2 text-xs font-medium text-neutral-300">
-          <span
-            className={`inline-block h-2 w-2 rounded-full bg-gradient-to-br ${color}`}
-          />
-          {tag}
-        </span>
-        <span className="text-[10px] uppercase tracking-wider text-neutral-600">
-          generated · unedited
-        </span>
+    <div className="bg-black p-8 sm:p-10">
+      <div className="font-display text-6xl leading-none tracking-tight text-white sm:text-7xl">
+        {big}
       </div>
-      <pre className="max-h-72 overflow-hidden whitespace-pre-wrap p-5 font-sans text-sm leading-relaxed text-neutral-200">
-        {body}
-      </pre>
-    </article>
+      <div className="mt-5 text-sm font-medium text-neutral-200">{label}</div>
+      <p className="mt-2 text-sm text-neutral-500">{sub}</p>
+    </div>
   );
 }
 
-function ComparisonCell({
-  value,
-  highlight = false,
-}: {
-  value: boolean | string;
-  highlight?: boolean;
-}) {
-  const isBool = typeof value === "boolean";
+function Feature({ children }: { children: React.ReactNode }) {
   return (
-    <td
-      className={`px-5 py-3 text-sm ${
-        highlight ? "bg-fuchsia-500/[0.04] text-neutral-100" : "text-neutral-400"
-      }`}
-    >
-      {isBool ? (
-        value ? (
-          <Check className="h-4 w-4 text-emerald-400" />
-        ) : (
-          <XIcon className="h-4 w-4 text-neutral-600" />
-        )
-      ) : (
-        <span>{value}</span>
-      )}
-    </td>
+    <li className="flex items-start gap-2.5">
+      <Check className="mt-0.5 h-4 w-4 flex-none text-emerald-400" />
+      <span>{children}</span>
+    </li>
   );
 }
