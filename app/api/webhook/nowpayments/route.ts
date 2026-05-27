@@ -50,16 +50,16 @@ export async function POST(req: NextRequest) {
   // Persist subscription state when DB is available
   const db = getDb();
   if (db && isPaid) {
-    // order_id is of the form `pro-<userId?>-<rand>`; for now the orderId
-    // alone is what we have without auth on the checkout (anon flow).
-    // When Clerk + checkout-with-user lands, we'll embed the user id into
-    // the order_id and parse it here.
+    // order_id format: `pro__<userId>__<timestamp>` (set in /api/checkout)
+    // userId is the Clerk user id, or "anon" for anonymous checkouts.
+    const parts = String(payload.order_id ?? "").split("__");
+    const userId = parts.length >= 3 ? parts[1] : "anon";
     const validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     try {
       await db
         .insert(schema.proSubscriptions)
         .values({
-          userId: "anonymous", // upgrade once we have auth on checkout
+          userId,
           id: String(payload.payment_id),
           provider: "nowpayments",
           orderId: payload.order_id,

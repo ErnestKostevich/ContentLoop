@@ -9,8 +9,33 @@ import {
   PRO_PLAN_USD,
   PRO_PLAN_DESCRIPTION,
 } from "@/lib/payments";
+import { isClerkEnabledServer } from "@/lib/auth";
 
 export const runtime = "nodejs";
+
+/**
+ * Order-id format: `pro__<userId>__<timestamp>`
+ * Double underscore separator avoids collision with Clerk's user_xxx ids
+ * which contain single underscores.
+ */
+function buildOrderId(userId: string | null): string {
+  const uid = userId ?? "anon";
+  const t = Date.now().toString(36);
+  const r = Math.random().toString(36).slice(2, 6);
+  return `pro__${uid}__${t}${r}`;
+}
+
+async function getClerkUserId(): Promise<string | null> {
+  if (!isClerkEnabledServer()) return null;
+  try {
+    // Dynamic import so Clerk's package isn't pulled in when it's not configured.
+    const { auth } = await import("@clerk/nextjs/server");
+    const { userId } = await auth();
+    return userId ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(req: NextRequest) {
   const provider = activeProviderServer();
@@ -34,12 +59,12 @@ export async function POST(req: NextRequest) {
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
 
+  const userId = await getClerkUserId();
+
   // ─── NOWPayments (crypto, KYC-free) ───
   if (provider === "nowpayments" && isNowPaymentsEnabledServer()) {
     try {
-      const orderId = `pro-${Date.now().toString(36)}-${Math.random()
-        .toString(36)
-        .slice(2, 8)}`;
+      const orderId = buildOrderId(userId);
       const invoice = await createInvoice({
         priceAmount: PRO_PLAN_USD,
         priceCurrency: "usd",
@@ -70,12 +95,17 @@ export async function POST(req: NextRequest) {
         mode: "subscription",
         line_items: [{ price: PRO_PRICE_ID!, quantity: 1 }],
         customer_email: body.email,
-        client_reference_id: body.clientReferenceId,
+        client_reference_id: userId ?? body.clientReferenceId,
         allow_promotion_codes: true,
         billing_address_collection: "auto",
         success_url: `${baseUrl}/app?upgraded=1&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/#pricing?cancelled=1`,
-        subscription_data: { metadata: { plan: "pro_monthly" } },
+        subscription_data: {
+          metadata: {
+            plan: "pro_monthly",
+            ...(userId ? { user_id: userId } : {}),
+          },
+        },
       });
       return NextResponse.json({ url: session.url, provider: "stripe" });
     } catch (e) {
