@@ -1,40 +1,28 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-
 /**
  * Next.js 16 renamed `middleware.ts` → `proxy.ts`.
- * This file is intentionally a no-op until Clerk is configured.
  *
- * To turn on auth:
- *   1. Add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY + CLERK_SECRET_KEY to .env.local
- *   2. Uncomment the clerk block below
- *   3. List paths that require auth in the matcher
+ * When Clerk env vars are present, we mount clerkMiddleware so
+ * `auth()` works in API routes and Server Components.
+ * When not, we export a no-op so the file still satisfies the
+ * matcher convention without pulling Clerk into the bundle path.
  */
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 const clerkEnabled = Boolean(
   process.env.CLERK_SECRET_KEY &&
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 );
 
-// ──────────────────────────────────────────────────────────
-// When you enable Clerk, replace the body below with:
-//
-//   import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-//   const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
-//   export default clerkMiddleware((auth, req) => {
-//     if (isProtectedRoute(req)) auth().protect();
-//   });
-// ──────────────────────────────────────────────────────────
+const noop = (_req: NextRequest) => NextResponse.next();
 
-export default function proxy(request: NextRequest) {
-  // No-op for now. clerkEnabled is here so the import isn't unused.
-  void clerkEnabled;
-  void request;
-  return NextResponse.next();
-}
+export default clerkEnabled ? clerkMiddleware() : noop;
 
 export const config = {
   // Run on everything except static assets and Next internals.
+  // This matches Clerk's recommended matcher so all API routes
+  // (where auth() is called) are covered.
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|map)$).*)",
   ],
