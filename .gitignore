@@ -44,6 +44,9 @@ next-env.d.ts
 .commitmsg.tmp
 *.tmp
 
+# chrome extension build artifact (rebuild via scripts in chrome-extension/README.md)
+/chrome-extension.zip
+
 # claude code internal
 .claude/
 

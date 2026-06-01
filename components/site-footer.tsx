@@ -13,9 +13,6 @@ export function SiteFooter() {
           <TipJar variant="footer" />
         </div>
         <div className="flex items-center gap-5">
-          <Link href="/#features" className="hover:text-white transition">
-            Features
-          </Link>
           <Link href="/#pricing" className="hover:text-white transition">
             Pricing
           </Link>
@@ -24,6 +21,9 @@ export function SiteFooter() {
           </Link>
           <Link href="/app" className="hover:text-white transition">
             App
+          </Link>
+          <Link href="/privacy" className="hover:text-white transition">
+            Privacy
           </Link>
         </div>
       </div>

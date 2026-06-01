@@ -1,12 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "ContentLoop — Repurpose this page",
+  "name": "ContentLoop — Repurpose any page",
   "short_name": "ContentLoop",
   "version": "0.0.1",
-  "description": "One-click: turn the article / post you're reading into a Twitter thread, LinkedIn post, IG caption, newsletter, Shorts script, carousel, or Reddit post. Powered by your own Anthropic key.",
+  "description": "One click: turn the article you're reading into a Twitter thread, LinkedIn post, IG caption, newsletter, Shorts script, carousel, or Reddit post. Your own Anthropic key — pay $0 to us.",
+  "author": "Ernest Kostevich",
+  "homepage_url": "https://contentloop-puce.vercel.app",
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "ContentLoop — repurpose this page"
+    "default_title": "ContentLoop — repurpose this page",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
   },
   "background": {
     "service_worker": "background.js",
