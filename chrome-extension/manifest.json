@@ -3,7 +3,7 @@
   "name": "ContentLoop — Repurpose any page",
   "short_name": "ContentLoop",
   "version": "0.0.1",
-  "description": "One click: turn the article you're reading into a Twitter thread, LinkedIn post, IG caption, newsletter, Shorts script, carousel, or Reddit post. Your own Anthropic key — pay $0 to us.",
+  "description": "Turn any article into 7 platform-native posts — thread, LinkedIn, IG, newsletter, Shorts, carousel, Reddit — in one click.",
   "author": "Ernest Kostevich",
   "homepage_url": "https://contentloop-puce.vercel.app",
   "icons": {

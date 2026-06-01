@@ -13,9 +13,9 @@ Use these values when filling out the form at
 ContentLoop — Repurpose any page
 ```
 
-### Summary  (short description, max 132 chars)
+### Summary  (short description, max 132 chars — same as manifest description)
 ```
-One click: turn any article into a thread, LinkedIn post, IG caption, newsletter, Shorts script, carousel, or Reddit post.
+Turn any article into 7 platform-native posts — thread, LinkedIn, IG, newsletter, Shorts, carousel, Reddit — in one click.
 ```
 
 ### Description  (full, max 16000 chars — copy as-is)
