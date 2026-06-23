@@ -5,6 +5,12 @@
       "has": [{ "type": "host", "value": "contentloop-puce.vercel.app" }],
       "destination": "https://contentloop.fun/:path*",
       "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.contentloop.fun" }],
+      "destination": "https://contentloop.fun/:path*",
+      "permanent": true
     }
   ]
 }
