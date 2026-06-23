@@ -30,7 +30,11 @@ export function paymentsEnabledServer(): boolean {
   return activeProviderServer() !== null;
 }
 
-/** Pro plan price in USD (used by checkout providers). */
-export const PRO_PLAN_USD = Number(process.env.USDT_PRO_AMOUNT_USD ?? process.env.PRO_PLAN_USD ?? "9");
+/** Pro plan price in USD. */
+export const PRO_PLAN_USD = Number(process.env.PRO_PLAN_USD ?? "9");
+
+export function formatPlanPrice(usd = PRO_PLAN_USD): string {
+  return Number.isInteger(usd) ? `$${usd}` : `$${usd.toFixed(2)}`;
+}
 export const PRO_PLAN_DAYS = 30;
 export const PRO_PLAN_DESCRIPTION = "ContentLoop Pro — 30 days of premium features (Custom Formats, Brand Kits, Export, priority support).";
