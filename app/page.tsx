@@ -20,50 +20,52 @@ export default function LandingPage() {
       <section className="relative isolate min-h-dvh overflow-hidden">
         <div className="spotlight drift" aria-hidden />
         <SiteHeader overlay />
-        <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-center px-4 pb-16 pt-16 sm:px-6 lg:pb-20 lg:pt-20">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
-              v0.0.1 · powered by Claude Sonnet 4.5
+        <div className="relative z-10 flex min-h-dvh flex-col">
+          <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-4 pt-16 pb-10 sm:px-6">
+            <div className="mx-auto max-w-4xl text-center">
+              <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
+                v0.0.1 · powered by Claude Sonnet 4.5
+              </div>
+
+              <h1 className="mt-8 text-balance text-5xl font-medium leading-[0.95] tracking-extra-tight text-white sm:text-7xl lg:text-[110px]">
+                one post becomes{" "}
+                <span className="font-display-italic text-gradient">ten.</span>
+              </h1>
+
+              <p className="mx-auto mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-neutral-400 sm:text-xl">
+                Paste a blog post, podcast transcript, or YouTube script.
+                Get seven platform-native posts — a thread, a LinkedIn, an IG
+                caption, a newsletter, three Shorts scripts, a carousel,
+                a Reddit post — written{" "}
+                <span className="font-display-italic text-white">in your voice</span>.
+                You bring your own AI key. We don&apos;t take a cut.
+              </p>
+
+              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Link
+                  href="/app"
+                  className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-semibold text-black shadow-2xl shadow-fuchsia-500/10 transition hover:bg-neutral-200"
+                >
+                  {serverKey ? "Try it free →" : "Open the app →"}
+                </Link>
+                <Link
+                  href="#how"
+                  className="inline-flex h-12 items-center justify-center rounded-full px-5 text-sm text-neutral-400 transition hover:text-white"
+                >
+                  See how it works
+                </Link>
+              </div>
+
+              <p className="mt-5 text-xs text-neutral-500">
+                No signup to try. No credit card. Bring your own Anthropic key
+                (~$0.01 per run).
+              </p>
             </div>
-
-            <h1 className="mt-8 text-balance text-5xl font-medium leading-[0.95] tracking-extra-tight text-white sm:text-7xl lg:text-[110px]">
-              one post becomes{" "}
-              <span className="font-display-italic text-gradient">ten.</span>
-            </h1>
-
-            <p className="mx-auto mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-neutral-400 sm:text-xl">
-              Paste a blog post, podcast transcript, or YouTube script.
-              Get seven platform-native posts — a thread, a LinkedIn, an IG
-              caption, a newsletter, three Shorts scripts, a carousel,
-              a Reddit post — written{" "}
-              <span className="font-display-italic text-white">in your voice</span>.
-              You bring your own AI key. We don&apos;t take a cut.
-            </p>
-
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/app"
-                className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-semibold text-black shadow-2xl shadow-fuchsia-500/10 transition hover:bg-neutral-200"
-              >
-                {serverKey ? "Try it free →" : "Open the app →"}
-              </Link>
-              <Link
-                href="#how"
-                className="inline-flex h-12 items-center justify-center rounded-full px-5 text-sm text-neutral-400 transition hover:text-white"
-              >
-                See how it works
-              </Link>
-            </div>
-
-            <p className="mt-5 text-xs text-neutral-500">
-              No signup to try. No credit card. Bring your own Anthropic key
-              (~$0.01 per run).
-            </p>
           </div>
 
-          {/* Format chips — minimal, no surrounding boxes */}
-          <div className="mx-auto mt-14 flex max-w-4xl flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm sm:mt-16">
+          {/* Format chips — anchored below the centered hero block */}
+          <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4 pb-10 text-sm sm:px-6">
             {FORMATS.map((f, i) => (
               <span key={f.id} className="flex items-center gap-3">
                 <span
