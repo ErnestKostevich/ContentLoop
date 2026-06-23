@@ -20,7 +20,7 @@ export default function LandingPage() {
       <section className="relative isolate min-h-dvh overflow-hidden">
         <div className="spotlight drift" aria-hidden />
         <SiteHeader overlay />
-        <div className="relative z-10 flex min-h-dvh flex-col px-4 pb-10 pt-16 sm:px-6">
+        <div className="relative z-10 flex min-h-dvh flex-col px-4 pb-16 pt-16 sm:px-6">
           <div className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-center">
             <div className="mx-auto w-full max-w-4xl text-center">
               <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
