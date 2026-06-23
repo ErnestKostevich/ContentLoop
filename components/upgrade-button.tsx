@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, LogIn } from "lucide-react";
 import { SignInButton, useAuth } from "@clerk/nextjs";
+import { UsdtUpgradePanel } from "@/components/usdt-upgrade-panel";
 
 const CLERK_ENABLED = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
@@ -15,6 +16,19 @@ export function UpgradeButton({
   enabled: boolean;
   className?: string;
 }) {
+  const [directUsdt, setDirectUsdt] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/payment/config")
+      .then((r) => r.json())
+      .then((d) => setDirectUsdt(Boolean(d.enabled)))
+      .catch(() => {});
+  }, []);
+
+  if (enabled && directUsdt) {
+    return <UsdtUpgradePanel className={className ? `${className} mt-0` : undefined} />;
+  }
+
   // When Clerk is configured AND payments are live, gate Upgrade behind
   // sign-in so the payment can be tied to a real user_id (otherwise Pro
   // disappears when localStorage is cleared).
