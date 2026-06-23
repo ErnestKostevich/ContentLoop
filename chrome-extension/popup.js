@@ -1,8 +1,8 @@
 // ContentLoop — popup script
 // Loads BYOK key from chrome.storage, scrapes current tab for article text,
-// shows formats picker, calls /api/generate on contentloop-puce.vercel.app.
+// shows formats picker, calls /api/generate on contentloop.fun.
 
-const API_BASE = "https://contentloop-puce.vercel.app";
+const API_BASE = "https://contentloop.fun";
 
 const FORMATS = [
   { id: "twitter_thread", label: "X thread" },

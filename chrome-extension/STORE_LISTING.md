@@ -40,7 +40,7 @@ WHAT YOU GET, IN ONE CLICK
 
 HOW IT'S DIFFERENT
 1. Platform-native, not copy-paste. Each format has its own prompt — different length, different hook style, different structure.
-2. Your voice. Train a Voice Profile on the main app (https://contentloop-puce.vercel.app/voice) with 5 of your past posts. The output stops sounding like AI and starts sounding like you.
+2. Your voice. Train a Voice Profile on the main app (https://contentloop.fun/voice) with 5 of your past posts. The output stops sounding like AI and starts sounding like you.
 3. You pay Anthropic, never us. ContentLoop is BYOK — Bring Your Own Key. Paste your sk-ant-… key once; we never see it, log it, or take a cut. Typical run: $0.005–$0.02 of your own Anthropic credit.
 
 PRIVACY
@@ -49,7 +49,7 @@ PRIVACY
 • We don't train on your content.
 • We don't run analytics or trackers inside the extension.
 
-Read the full policy at https://contentloop-puce.vercel.app/privacy
+Read the full policy at https://contentloop.fun/privacy
 
 NO ACCOUNT NEEDED
 The extension works the moment you paste your Anthropic key. Anthropic gives every new account ~$5 of free credit, which is enough for hundreds of generations on ContentLoop.
@@ -58,7 +58,7 @@ PRO (OPTIONAL, ON THE WEB APP)
 $9 / 30 days, payable in any crypto via NOWPayments. Unlocks unlimited Brand Kits (multi-voice profiles), custom user-defined formats, Markdown / JSON export, and cross-device sync. Free tier already lets you do everything the extension does — Pro is just for power users.
 
 LEARN MORE
-Open the full app at https://contentloop-puce.vercel.app
+Open the full app at https://contentloop.fun
 
 Made by a solo developer. Feedback to ernest2011kostevich@gmail.com.
 ```
@@ -141,7 +141,7 @@ Required because users repurpose articles from any blog, news site, or platform.
 
 ### Privacy policy URL
 ```
-https://contentloop-puce.vercel.app/privacy
+https://contentloop.fun/privacy
 ```
 
 ---

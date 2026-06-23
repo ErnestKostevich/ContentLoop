@@ -11,12 +11,9 @@
  *   5. Run `npm run db:push` to create tables
  */
 
-import { neon, neonConfig } from "@neondatabase/serverless";
+import { neon } from "@neondatabase/serverless";
 import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
-
-// Use HTTP fetch (works on Vercel Edge + Node). Caches connections.
-neonConfig.fetchConnectionCache = true;
 
 let _db: NeonHttpDatabase<typeof schema> | null = null;
 

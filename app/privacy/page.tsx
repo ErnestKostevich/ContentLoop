@@ -141,7 +141,7 @@ export default function PrivacyPage() {
               <p>
                 The extension sends scraped page text + your Anthropic key
                 directly to{" "}
-                <code>https://contentloop-puce.vercel.app/api/generate</code>,
+                <code>https://contentloop.fun/api/generate</code>,
                 which forwards it to Anthropic and returns the result. No
                 analytics, no telemetry, no third-party calls.
               </p>
@@ -167,7 +167,7 @@ export default function PrivacyPage() {
               <ul>
                 <li>
                   <strong>Local data:</strong> clear your browser&apos;s
-                  storage for <code>contentloop-puce.vercel.app</code>, or use
+                  storage for <code>contentloop.fun</code>, or use
                   the &ldquo;Clear all&rdquo; buttons in the workspace.
                 </li>
                 <li>
