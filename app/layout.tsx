@@ -3,10 +3,8 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/components/auth-provider";
 import { ClerkStyleFix } from "@/components/clerk-style-fix";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://contentloop-puce.vercel.app";
 
 const geistSans = Geist({
   variable: "--font-sans",

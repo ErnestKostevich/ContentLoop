@@ -41,7 +41,7 @@ Chrome Web Store developer console.
    (one-time $5 developer fee).
 2. **New item → Upload** → pick `chrome-extension.zip`.
 3. Fill in the store listing using `STORE_LISTING.md` in this folder.
-4. Add a privacy policy URL: `https://contentloop-puce.vercel.app/privacy`.
+4. Add a privacy policy URL: `https://contentloop.fun/privacy`.
 5. Justify each permission in the "Privacy practices" tab — copy from
    `STORE_LISTING.md`.
 6. Submit for review. Approval takes 1–3 days for new developers.

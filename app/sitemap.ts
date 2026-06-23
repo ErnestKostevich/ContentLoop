@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://contentloop-puce.vercel.app";
+const BASE_URL = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

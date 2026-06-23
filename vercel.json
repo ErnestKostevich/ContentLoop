@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "contentloop-puce.vercel.app" }],
+      "destination": "https://contentloop.fun/:path*",
+      "permanent": true
+    }
+  ]
+}
