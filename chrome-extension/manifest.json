@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ContentLoop — Repurpose any page",
   "short_name": "ContentLoop",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Turn any article into 7 platform-native posts — thread, LinkedIn, IG, newsletter, Shorts, carousel, Reddit — in one click.",
   "author": "Ernest Kostevich",
   "homepage_url": "https://contentloop.fun",

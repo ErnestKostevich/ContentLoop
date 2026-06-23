@@ -22,6 +22,14 @@ export function SiteFooter() {
           <Link href="/app" className="hover:text-white transition">
             App
           </Link>
+          <a
+            href="https://chromewebstore.google.com/detail/contentloop-%E2%80%94-repurpose-a/dljiebegclcoddimjcmcllfcaomgnjbd"
+            className="hover:text-white transition"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Extension
+          </a>
           <Link href="/privacy" className="hover:text-white transition">
             Privacy
           </Link>
