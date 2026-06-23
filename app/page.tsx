@@ -20,8 +20,9 @@ export default function LandingPage() {
       <section className="relative isolate min-h-dvh overflow-hidden">
         <div className="spotlight drift" aria-hidden />
         <SiteHeader overlay />
-        <div className="relative z-10 grid min-h-dvh grid-rows-[1fr_auto] px-4 sm:px-6">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-center pt-16 pb-8">
+        <div className="relative z-10 flex min-h-dvh flex-col px-4 sm:px-6">
+          <div className="h-16 shrink-0" aria-hidden />
+          <div className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-center">
             <div className="mx-auto w-full max-w-4xl text-center">
               <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
@@ -64,7 +65,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-center gap-x-6 gap-y-3 px-2 pb-12 pt-4 text-sm">
+          <div className="mx-auto flex w-full max-w-4xl shrink-0 flex-wrap items-center justify-center gap-x-6 gap-y-3 px-2 pt-4 text-sm">
             {FORMATS.map((f, i) => (
               <span key={f.id} className="flex items-center gap-3">
                 <span
@@ -77,6 +78,7 @@ export default function LandingPage() {
               </span>
             ))}
           </div>
+          <div className="h-16 shrink-0" aria-hidden />
         </div>
       </section>
 
