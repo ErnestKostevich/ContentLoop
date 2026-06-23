@@ -148,7 +148,7 @@ export default function LandingPage() {
                 <pre className="whitespace-pre-wrap font-sans text-[15px] leading-[1.55] text-neutral-100">
 {`1/ I built a great product for two years and made roughly $0.
 
-The fix wasn&apos;t a better product. It was 90 days of one short post per day, on the platform my buyers actually used.
+The fix wasn't a better product. It was 90 days of one short post per day, on the platform my buyers actually used.
 
 By day 60, three companies had emailed me.
 By day 90, I quit my job.
@@ -337,7 +337,7 @@ In a market where anyone can build, the audience you patiently earn before you n
               },
               {
                 q: "Is my source content stored?",
-                a: "No. It&apos;s processed in-memory and forgotten as soon as the response is sent. We don&apos;t train on your input. Voice profile and history live in your browser (or your account when signed in).",
+                a: "No. It's processed in-memory and forgotten as soon as the response is sent. We don't train on your input. Voice profile and history live in your browser (or your account when signed in).",
               },
             ].map((item) => (
               <details key={item.q} className="group">

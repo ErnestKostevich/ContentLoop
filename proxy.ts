@@ -17,7 +17,12 @@ const clerkEnabled = Boolean(
 
 const noop = (_req: NextRequest) => NextResponse.next();
 
-export default clerkEnabled ? clerkMiddleware() : noop;
+export default clerkEnabled
+  ? clerkMiddleware({
+      // Serve Clerk Frontend API from clerk.contentloop.fun once DNS is verified.
+      frontendApiProxy: { enabled: true },
+    })
+  : noop;
 
 export const config = {
   // Run on everything except static assets and Next internals.
