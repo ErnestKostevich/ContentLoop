@@ -17,12 +17,25 @@ const clerkEnabled = Boolean(
 
 const noop = (_req: NextRequest) => NextResponse.next();
 
+function redirectWwwToApex(req: NextRequest) {
+  const host = req.headers.get("host")?.split(":")[0];
+  if (host === "www.contentloop.fun") {
+    const url = req.nextUrl.clone();
+    url.host = "contentloop.fun";
+    url.protocol = "https:";
+    return NextResponse.redirect(url, 308);
+  }
+  return null;
+}
+
+const clerk = clerkMiddleware({
+  // Serve Clerk Frontend API from clerk.contentloop.fun once DNS is verified.
+  frontendApiProxy: { enabled: true },
+});
+
 export default clerkEnabled
-  ? clerkMiddleware({
-      // Serve Clerk Frontend API from clerk.contentloop.fun once DNS is verified.
-      frontendApiProxy: { enabled: true },
-    })
-  : noop;
+  ? (req: NextRequest) => redirectWwwToApex(req) ?? clerk(req)
+  : (req: NextRequest) => redirectWwwToApex(req) ?? noop(req);
 
 export const config = {
   // Run on everything except static assets and Next internals.
