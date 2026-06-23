@@ -15,12 +15,12 @@ export default function LandingPage() {
   return (
     <>
       <div className="grain" aria-hidden />
-      <SiteHeader />
 
       {/* ─────────────────────────── HERO ─────────────────────────── */}
       <section className="relative isolate overflow-hidden">
         <div className="spotlight drift" aria-hidden />
-        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-28 pt-10 sm:px-6 sm:pt-12 lg:pt-14">
+        <SiteHeader overlay />
+        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-28 pt-[4.75rem] sm:px-6">
           <div className="mx-auto max-w-4xl text-center">
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
