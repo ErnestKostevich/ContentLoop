@@ -23,7 +23,7 @@ export default function LandingPage() {
         <div className="relative z-10 flex min-h-dvh flex-col px-4 sm:px-6">
           <div className="h-16 shrink-0" aria-hidden />
           <div className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-center">
-            <div className="mx-auto w-full max-w-4xl text-center">
+            <div className="mx-auto w-full max-w-4xl translate-y-6 text-center sm:translate-y-8">
               <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
                 v0.0.1 · powered by Claude Sonnet 4.5
