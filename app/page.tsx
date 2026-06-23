@@ -17,10 +17,10 @@ export default function LandingPage() {
       <div className="grain" aria-hidden />
 
       {/* ─────────────────────────── HERO ─────────────────────────── */}
-      <section className="relative isolate overflow-hidden">
+      <section className="relative isolate min-h-dvh overflow-hidden">
         <div className="spotlight drift" aria-hidden />
         <SiteHeader overlay />
-        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-28 pt-[4.75rem] sm:px-6">
+        <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-center px-4 pb-16 pt-16 sm:px-6 lg:pb-20 lg:pt-20">
           <div className="mx-auto max-w-4xl text-center">
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-400 backdrop-blur">
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
@@ -63,7 +63,7 @@ export default function LandingPage() {
           </div>
 
           {/* Format chips — minimal, no surrounding boxes */}
-          <div className="mx-auto mt-20 flex max-w-4xl flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
+          <div className="mx-auto mt-14 flex max-w-4xl flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm sm:mt-16">
             {FORMATS.map((f, i) => (
               <span key={f.id} className="flex items-center gap-3">
                 <span
