@@ -19,9 +19,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pubKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   if (!pubKey) return <>{children}</>;
 
+  const clerkDomain = process.env.NEXT_PUBLIC_CLERK_DOMAIN;
+
   return (
     <ClerkProvider
       publishableKey={pubKey}
+      {...(clerkDomain ? { domain: clerkDomain } : {})}
       appearance={{
         baseTheme: dark,
         variables: {
