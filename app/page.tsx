@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { UpgradeButton } from "@/components/upgrade-button";
 import { FORMATS } from "@/lib/formats";
-import { activeProviderServer, PRO_PLAN_USD } from "@/lib/payments";
+import { activeProviderServer, formatPlanPrice, PRO_PLAN_USD } from "@/lib/payments";
 import { hasServerKey } from "@/lib/anthropic";
 
 export default function LandingPage() {
@@ -200,8 +200,8 @@ In a market where anyone can build, the audience you patiently earn before you n
             <span className="font-display-italic text-white">$0.90 / month</span>{" "}
             on Anthropic. Paid directly to them, not to us. Pro plan
             (sync + brand kits + custom formats) is{" "}
-            <span className="font-display-italic text-white">${PRO_PLAN_USD.toFixed(2)} / 30 days</span>,
-            payable in any crypto via NOWPayments.
+            <span className="font-display-italic text-white">{formatPlanPrice()} / 30 days</span>,
+            payable in USDT on-chain.
           </p>
         </div>
       </section>
@@ -263,12 +263,12 @@ In a market where anyone can build, the audience you patiently earn before you n
               <div className="relative">
                 <h3 className="text-lg font-medium text-white">Pro</h3>
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-white">${PRO_PLAN_USD.toFixed(2)}</span>
+                  <span className="font-display text-3xl text-white">{formatPlanPrice()}</span>
                   <span className="text-sm text-neutral-400">/ 30 days</span>
                 </div>
                 <p className="mt-1 text-sm text-neutral-500">
                   {paymentsProvider === "direct_usdt"
-                    ? `Pay exactly $${PRO_PLAN_USD.toFixed(2)} USDT (TRC-20 or ERC-20) — verify with tx hash.`
+                    ? "Pay in USDT (TRC-20 or ERC-20). On-chain verification — instant Pro."
                     : paymentsProvider === "nowpayments"
                       ? "Pay in BTC, ETH, USDT, or 200+ other crypto."
                       : "Premium tooling. Still BYOK for AI."}

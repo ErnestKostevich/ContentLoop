@@ -19,10 +19,15 @@ export function isDirectUsdtEnabledServer(): boolean {
 }
 
 export function getUsdtPaymentConfig() {
-  const amountUsd = Number(process.env.USDT_PRO_AMOUNT_USD ?? "3.5");
+  const amountUsd = Number(
+    process.env.USDT_PRO_AMOUNT_USD ?? process.env.PRO_PLAN_USD ?? "9"
+  );
+  const amountLabel = Number.isInteger(amountUsd)
+    ? `$${amountUsd}`
+    : `$${amountUsd.toFixed(2)}`;
   return {
     amountUsd,
-    amountLabel: `$${amountUsd.toFixed(2)}`,
+    amountLabel,
     trc20Address: process.env.USDT_TRC20_ADDRESS?.trim() ?? "",
     erc20Address: process.env.USDT_ERC20_ADDRESS?.trim() ?? "",
     maxAgeHours: 24,
