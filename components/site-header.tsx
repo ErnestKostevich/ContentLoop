@@ -2,9 +2,15 @@ import Link from "next/link";
 import { AuthButtons } from "@/components/auth-buttons";
 import { BrandMark } from "@/components/brand-mark";
 
-export function SiteHeader() {
+export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-black/60 backdrop-blur supports-[backdrop-filter]:bg-black/40">
+    <header
+      className={
+        overlay
+          ? "absolute inset-x-0 top-0 z-40 w-full border-b border-white/5 bg-black/60 backdrop-blur supports-[backdrop-filter]:bg-black/40"
+          : "sticky top-0 z-40 w-full border-b border-white/5 bg-black/60 backdrop-blur supports-[backdrop-filter]:bg-black/40"
+      }
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
