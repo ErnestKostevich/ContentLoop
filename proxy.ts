@@ -8,7 +8,7 @@
  */
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import type { NextRequest, NextFetchEvent } from "next/server";
 
 const clerkEnabled = Boolean(
   process.env.CLERK_SECRET_KEY &&
@@ -34,7 +34,7 @@ const clerk = clerkMiddleware({
 });
 
 export default clerkEnabled
-  ? (req: NextRequest) => redirectWwwToApex(req) ?? clerk(req)
+  ? (req: NextRequest, event: NextFetchEvent) => redirectWwwToApex(req) ?? clerk(req, event)
   : (req: NextRequest) => redirectWwwToApex(req) ?? noop(req);
 
 export const config = {
