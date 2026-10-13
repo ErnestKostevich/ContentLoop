@@ -1,29 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/components/auth-provider";
 import { ClerkStyleFix } from "@/components/clerk-style-fix";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-});
-
-// Display serif for headlines + italic emphasis — same vibe as
-// Cluely, Anthropic, Sora. Free via Google Fonts.
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-display",
-  weight: "400",
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "ContentLoop — one post becomes ten",
@@ -54,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased dark`}
+      className="h-full antialiased dark"
     >
       <body className="min-h-full flex flex-col bg-black text-neutral-100 selection:bg-fuchsia-400/30 selection:text-white">
         <AuthProvider>{children}</AuthProvider>

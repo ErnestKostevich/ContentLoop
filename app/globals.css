@@ -8,9 +8,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-display: var(--font-display);
+}
+
+/* Platform fonts keep production builds offline without downloaded font assets. */
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: Georgia, Cambria, "Times New Roman", serif;
 }
 
 html {
@@ -26,7 +30,7 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
-/* Display headings — Instrument Serif (italic by default for emphasis) */
+/* Platform serif headings, with italic emphasis. */
 .font-display {
   font-family: var(--font-display), "Times New Roman", serif;
 }
