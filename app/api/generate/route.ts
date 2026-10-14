@@ -59,6 +59,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  if (
+    !body || typeof body !== "object" || Array.isArray(body) ||
+    typeof body.source !== "string" || !Array.isArray(body.formats) ||
+    (body.customFormats != null && !Array.isArray(body.customFormats)) ||
+    [body.extraInstructions, body.apiKey].some(
+      (value) => value != null && typeof value !== "string"
+    ) ||
+    (body.voiceProfile != null && (
+      typeof body.voiceProfile !== "object" || Array.isArray(body.voiceProfile) ||
+      (body.voiceProfile.instructions != null && typeof body.voiceProfile.instructions !== "string") ||
+      (body.voiceProfile.samples != null && (
+        !Array.isArray(body.voiceProfile.samples) ||
+        body.voiceProfile.samples.some((sample) => typeof sample !== "string")
+      ))
+    ))
+  ) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
   const source = (body.source ?? "").trim();
   const customFormatMap = new Map<string, CustomFormatPayload>();
   for (const cf of body.customFormats ?? []) {

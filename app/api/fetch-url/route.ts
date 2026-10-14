@@ -48,6 +48,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body) || typeof body.url !== "string") {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
   const url = isHttpUrl((body.url ?? "").trim());
   if (!url) {
     return NextResponse.json(
